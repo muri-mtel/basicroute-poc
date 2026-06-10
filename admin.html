@@ -60,21 +60,23 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--text-pr
 .badge-gray{background:var(--n100);color:var(--n500);border:1px solid var(--border)}
 .badge-blue{background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-border)}
 
-/* Stat cards */
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+/* Stat items (inside client card) */
+.stat-inner{background:var(--bg);border-radius:10px;padding:14px 16px}
 .stat-label{font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:7px;text-transform:none;letter-spacing:0}
-.stat-value{font-size:28px;font-weight:700;letter-spacing:-.03em;color:var(--text-primary);margin-bottom:4px;line-height:1}
-.stat-value-text{font-size:18px;font-weight:600;letter-spacing:-.01em;color:var(--text-primary);margin-bottom:4px;line-height:1.2}
+.stat-value{font-size:26px;font-weight:700;letter-spacing:-.03em;color:var(--text-primary);margin-bottom:4px;line-height:1}
+.stat-value-text{font-size:17px;font-weight:600;letter-spacing:-.01em;color:var(--text-primary);margin-bottom:4px;line-height:1.2}
 .stat-delta{font-size:11px;font-weight:500;color:var(--success)}
 
 /* Grid */
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 
-/* Client sections */
-.client-section{margin-bottom:36px}
-.client-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.client-name{font-size:15px;font-weight:600;color:var(--text-primary);letter-spacing:-.01em}
-.client-divider{flex:1;height:1px;background:var(--border)}
+/* Client cards */
+.client-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px}
+.client-card-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px}
+.logo-placeholder{width:52px;height:52px;background:var(--bg);border:1.5px dashed var(--border-strong);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-muted);font-size:9px;font-weight:500;text-align:center;line-height:1.3}
+.client-card-name{font-size:15px;font-weight:600;color:var(--text-primary);letter-spacing:-.01em;margin-bottom:3px}
+.client-card-meta{font-size:12px;color:var(--text-muted)}
+.client-card-body{padding:18px 20px;display:flex;flex-direction:column;gap:10px}
 </style>
 </head>
 <body>
@@ -122,7 +124,7 @@ const clients = [
 ];
 
 function StatCard({label, value, sub, delta, isText}) {
-  return h('div',{className:'stat-card'},
+  return h('div',{className:'stat-inner'},
     h('div',{className:'stat-label'},label),
     h('div',{style:{display:'flex',alignItems:'baseline',gap:5}},
       h('div',{className: isText ? 'stat-value-text' : 'stat-value'}, value),
@@ -138,18 +140,23 @@ function StatCard({label, value, sub, delta, isText}) {
   );
 }
 
-function ClientSection({name, badge, stats}) {
-  return h('div',{className:'client-section'},
-    h('div',{className:'client-header'},
-      h('span',{className:'client-name'},name),
-      h('span',{className:'badge badge-green'},badge),
-      h('div',{className:'client-divider'})
+function ClientCard({name, badge, stats}) {
+  return h('div',{className:'client-card'},
+    h('div',{className:'client-card-header'},
+      h('div',{className:'logo-placeholder'},'Logo'),
+      h('div',{style:{flex:1}},
+        h('div',{className:'client-card-name'},name),
+        h('div',{className:'client-card-meta'},'AI-powered content generation')
+      ),
+      h('span',{className:'badge badge-green'},badge)
     ),
-    h('div',{className:'grid-3',style:{marginBottom:12}},
-      stats.slice(0,3).map((s,i) => h(StatCard,{key:i,...s}))
-    ),
-    h('div',{className:'grid-3'},
-      stats.slice(3,6).map((s,i) => h(StatCard,{key:i,...s}))
+    h('div',{className:'client-card-body'},
+      h('div',{className:'grid-3'},
+        stats.slice(0,3).map((s,i) => h(StatCard,{key:i,...s}))
+      ),
+      h('div',{className:'grid-3'},
+        stats.slice(3,6).map((s,i) => h(StatCard,{key:i,...s}))
+      )
     )
   );
 }
@@ -213,7 +220,7 @@ function AdminDashboard() {
           ),
           h('span',{className:'badge badge-blue'},'3 active clients')
         ),
-        clients.map((c,i) => h(ClientSection,{key:i,...c}))
+        clients.map((c,i) => h(ClientCard,{key:i,...c}))
       )
     )
   );
