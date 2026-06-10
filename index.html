@@ -87,9 +87,9 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:18px;background:var(--bg
 
 /* ── Dashboard ────────────────────────────────────────────────────────────── */
 .campaigns-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.campaign-card{background:var(--surface);border:none;border-radius:12px;overflow:hidden;cursor:pointer;transition:box-shadow .15s;position:relative;box-shadow:var(--card-shadow)}
+.campaign-card{background:var(--surface);border:none;border-radius:12px;overflow:hidden;cursor:pointer;transition:box-shadow .15s;box-shadow:var(--card-shadow)}
 .campaign-card:hover{box-shadow:0 4px 24px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.07)}
-.campaign-card-new{display:flex;align-items:center;justify-content:center;border:none;box-shadow:none;background-color:transparent;background-image:url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23484848' stroke-width='1.5' stroke-dasharray='12%2c9' stroke-linecap='square'/%3e%3c/svg%3e");background-repeat:no-repeat;background-size:100% 100%;min-height:314px}
+.campaign-card-new{display:flex;align-items:center;justify-content:center;border:none;box-shadow:none;background-color:transparent;background-image:url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23484848' stroke-width='1.5' stroke-dasharray='12%2c9' stroke-linecap='square'/%3e%3c/svg%3e");background-repeat:no-repeat;background-size:100% 100%}
 .campaign-card-new:hover{background-image:url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23606060' stroke-width='1.5' stroke-dasharray='12%2c9' stroke-linecap='square'/%3e%3c/svg%3e");box-shadow:none}
 .campaign-thumbs-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:24px 24px 0}
 .campaign-thumb{width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover;display:block}
@@ -644,7 +644,6 @@ function Topbar({screen, credits, onNav}) {
   return h('div',{className:'topbar'},
     h('div',{className:'topbar-left'},
       h('div',{className:'topbar-logo',style:{cursor:'pointer'},onClick:()=>onNav('dashboard')},
-        h('div',{className:'topbar-logo-icon'}, h(LogoIcon)),
         h('span',{className:'topbar-logo-text'},'basicroute')
       ),
       h('div',{className:'topbar-crumb'},
@@ -695,45 +694,27 @@ function Dock({screen, onNav}) {
 }
 
 /* ── Screen 1 — Campaigns Dashboard ──────────────────────────────────────── */
-function S1({onNav}) {
-  const thumbs = [
-    ['assets/sg-thumb-1.png','assets/sg-thumb-2.png','assets/sg-thumb-3.png'],
-    ['assets/ar-thumb-1.png','assets/ar-thumb-2.png','assets/ar-thumb-3.png'],
-    ['assets/wr-thumb-1.png','assets/wr-thumb-2.png','assets/wr-thumb-3.png'],
-  ];
-  const campaigns = [
-    {id:'sg', name:'Summer Glow — TikTok Q3',      meta:'Started Jun 3 · TikTok · Lead capture',     versions:['v1','v2','v3'],         cur:2},
-    {id:'ar', name:'Autumn Refresh — Instagram Q3', meta:'Started Jun 8 · Instagram · Awareness',    versions:['v1','v2'],              cur:1},
-    {id:'wr', name:'Winter Radiance — TikTok Q4',  meta:'Started Apr 12 · TikTok · Brand awareness', versions:['v1','v2','v3','v4','v5'],cur:4},
-  ];
-
+function S1({onNav, campaigns}) {
   return h('div',{className:'screen-pad screen-enter'},
     h('div',{style:{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:40}},
       h('div',null,
         h('h1',{className:'pg-h1'},'Campaigns'),
-        h('p',{className:'pg-sub'},'3 campaigns')
+        h('p',{className:'pg-sub'},`${campaigns.length} campaign${campaigns.length===1?'':'s'}`)
       ),
       h('button',{className:'btn btn-dark',onClick:()=>onNav('setup')},'+ Create new campaign')
     ),
     h('div',{className:'campaigns-grid'},
-      campaigns.map((c,ci) =>
+      campaigns.map(c =>
         h('div',{key:c.id, className:'campaign-card', onClick:()=>onNav('reports')},
           h('div',{className:'campaign-thumbs-row'},
-            thumbs[ci].map((src,i) => h('img',{key:i,className:'campaign-thumb',src,alt:''}))
+            c.thumbs.map((src,i) => h('img',{key:i,className:'campaign-thumb',src,alt:''}))
           ),
           h('div',{className:'campaign-info'},
             h('div',{className:'campaign-name-row'},
               h('span',{className:'campaign-name'},c.name)
             ),
-            h('p',{className:'campaign-meta-txt'},c.meta),
-            h('div',{className:'version-track'},
-              c.versions.map((v,i) => h(React.Fragment,{key:v},
-                i > 0 && h('span',{className:'v-arrow'},'›'),
-                h('span',{className:`vbadge ${i===c.cur?'current':''}`},v)
-              ))
-            )
-          ),
-          h('span',{className:'campaign-arrow'},'›')
+            h('p',{className:'campaign-meta-txt'},c.meta)
+          )
         )
       ),
       h('div',{className:'campaign-card campaign-card-new',onClick:()=>onNav('setup')},
@@ -1854,11 +1835,25 @@ function App() {
   const [varData,   setVarData]   = useState(null);
   const [setupData, setSetupData] = useState(null);
   const [prevVideos,setPrevVideos]= useState([]);
+  const [campaigns, setCampaigns] = useState([
+    {id:'sg', name:'Summer Glow — TikTok Q3',      meta:'Started Jun 3 · TikTok · Lead capture',     thumbs:['assets/sg-thumb-1.png','assets/sg-thumb-2.png','assets/sg-thumb-3.png']},
+    {id:'ar', name:'Autumn Refresh — Instagram Q3', meta:'Started Jun 8 · Instagram · Awareness',    thumbs:['assets/ar-thumb-1.png','assets/ar-thumb-2.png','assets/ar-thumb-3.png']},
+    {id:'wr', name:'Winter Radiance — TikTok Q4',  meta:'Started Apr 12 · TikTok · Brand awareness', thumbs:['assets/wr-thumb-1.png','assets/wr-thumb-2.png','assets/wr-thumb-3.png']},
+  ]);
 
   const handleNav      = (s)    => { setScreen(s); };
   const handleCredits  = (delta)=> setCredits(prev => Math.max(0, Math.min(100, prev+delta)));
   const handleGenerate = (data) => { setVarData(data); setScreen('variations'); };
-  const handleSetupDone= (data) => { setSetupData(data); setScreen('upload'); };
+  const handleSetupDone= (data) => {
+    setSetupData(data);
+    setCampaigns(prev => [...prev, {
+      id: Date.now().toString(),
+      name: data.name,
+      meta: `${data.type} · ${data.format}`,
+      thumbs: [],
+    }]);
+    setScreen('upload');
+  };
   const handleNewVideo = ()     => {
     const IMGS = ['assets/video preview 01.png','assets/video preview 02.png','assets/video preview 03.png','assets/video preview 04.png'];
     setPrevVideos(prev => [...prev, IMGS[prev.length % 4]]);
@@ -1868,7 +1863,7 @@ function App() {
   const inFlow = ['setup','upload','loading','storyboard','generated'].includes(screen);
 
   const screenMap = {
-    dashboard:       h(S1,                   {onNav:handleNav}),
+    dashboard:       h(S1,                   {onNav:handleNav, campaigns}),
     brandIdentity:   h(BrandIdentityScreen,  {onNav:handleNav}),
     setup:           h(CampaignSetup,         {onDone:handleSetupDone}),
     upload:          h(CampaignWizard,        {onNav:handleNav, onCredits:handleCredits, setupData}),
