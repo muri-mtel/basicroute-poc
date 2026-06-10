@@ -199,10 +199,10 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg
 .sb-regen-go{background:var(--blue);border:none;border-radius:7px;color:#fff;font-size:11px;font-weight:700;font-family:'Gabarito',sans-serif;padding:6px 11px;cursor:pointer}
 
 /* ── Campaign result — 4 video cards ────────────────────────────────────── */
-.camp-videos-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.camp-videos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .camp-video-card{background:var(--surface);border:none;border-radius:12px;overflow:hidden;box-shadow:var(--card-shadow)}
-.camp-video-thumb{position:relative;aspect-ratio:16/9;max-height:240px;background:#0c0c12;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.camp-video-thumb img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85}
+.camp-video-thumb{position:relative;aspect-ratio:321/728;background:#0c0c12;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.camp-video-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .camp-play-btn{position:absolute;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.18);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,.3)}
 .camp-regen-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,.5)}
 .camp-spinner{width:28px;height:28px;border:2px solid rgba(255,255,255,.15);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
@@ -1373,10 +1373,10 @@ function ImageGenerationScreen() {
 
 function GeneratedScreen() {
   const videos = [
-    {label:'Video 1',img:'assets/video-1.png'},
-    {label:'Video 2',img:'assets/video-2.png'},
-    {label:'Video 3',img:'assets/video-3.png'},
-    {label:'Video 4',img:'assets/video-1.png'},
+    {label:'Video 1',img:'assets/video preview 01.png'},
+    {label:'Video 2',img:'assets/video preview 02.png'},
+    {label:'Video 3',img:'assets/video preview 03.png'},
+    {label:'Video 4',img:'assets/video preview 04.png'},
   ];
   const [saved,    setSaved]    = useState([false,false,false,false]);
   const [regenning,setRegenning]= useState([false,false,false,false]);
