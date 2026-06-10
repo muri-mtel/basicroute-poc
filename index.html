@@ -49,7 +49,7 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg
 .screen-pad{padding:38px 32px 100px}
 
 /* ── Dock ─────────────────────────────────────────────────────────────────── */
-.dock{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);height:54px;width:279px;background:rgba(20,20,20,0.92);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.08);border-radius:99px;display:flex;align-items:center;padding:7px 8px;gap:2px;z-index:100}
+.dock{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);height:54px;width:322px;background:rgba(20,20,20,0.92);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.08);border-radius:99px;display:flex;align-items:center;padding:7px 8px;gap:2px;z-index:100}
 .dock-btn{width:40px;height:40px;border-radius:50px;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0.5;cursor:pointer;transition:opacity .15s;background:transparent;border:none}
 .dock-btn:hover{opacity:0.8}
 .dock-btn.active{background:rgba(255,255,255,0.1);opacity:1}
@@ -327,6 +327,55 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg
 .fi-hint{font-size:11px;color:var(--text-dim);font-family:'Inter',sans-serif;white-space:nowrap;flex-shrink:0}
 .fi-cursor{display:inline-block;width:1.5px;height:12px;background:var(--text-primary);margin-left:1px;animation:blink .55s step-end infinite;vertical-align:middle}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── Reports ─────────────────────────────────────────────────────────────── */
+.reports-screen{display:flex;height:100%;overflow:hidden;animation:screenIn 220ms ease forwards}
+.reports-sidebar{width:256px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.reports-sidebar-hdr{padding:24px 20px 14px;border-bottom:1px solid var(--border);font-family:'Gabarito',sans-serif;font-size:15px;font-weight:600;color:var(--text-primary);letter-spacing:-0.15px}
+.reports-camp-list{flex:1;overflow-y:auto;padding:8px}
+.reports-camp-item{padding:11px 14px;border-radius:8px;cursor:pointer;transition:background .12s;margin-bottom:2px}
+.reports-camp-item:hover{background:rgba(255,255,255,.04)}
+.reports-camp-item.active{background:rgba(255,255,255,.07)}
+.reports-camp-name{font-family:'Gabarito',sans-serif;font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:5px;line-height:1.3}
+.reports-camp-row{display:flex;align-items:center;gap:8px}
+.reports-camp-stat{font-family:'Gabarito',sans-serif;font-size:11px;color:var(--text-muted)}
+
+.reports-content{flex:1;overflow-y:auto;padding:28px 32px 100px}
+.report-body{max-width:900px}
+.report-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px}
+.report-title{font-family:'Gabarito',sans-serif;font-size:22px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px;margin:0 0 4px}
+.report-subtitle{font-family:'Gabarito',sans-serif;font-size:12px;color:var(--text-muted);margin:0}
+
+.report-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.report-stat-card{background:var(--surface);border-radius:10px;padding:16px 18px;box-shadow:var(--card-shadow)}
+.report-stat-value{font-family:'Gabarito',sans-serif;font-size:26px;font-weight:600;color:var(--text-primary);letter-spacing:-0.5px;line-height:1;margin-bottom:5px}
+.report-stat-label{font-family:'Gabarito',sans-serif;font-size:11px;color:var(--text-muted)}
+
+.report-chart-wrap{background:var(--surface);border-radius:10px;padding:18px 20px 14px;margin-bottom:24px;box-shadow:var(--card-shadow)}
+.report-chart-title{font-family:'Gabarito',sans-serif;font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px}
+.report-chart{height:72px;display:flex;align-items:flex-end;gap:6px}
+.report-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
+.report-bar{width:100%;background:var(--blue);border-radius:3px 3px 0 0;min-height:3px;opacity:.75;transition:opacity .15s}
+.report-bar-col:hover .report-bar{opacity:1}
+.report-bar-lbl{font-family:'Gabarito',sans-serif;font-size:9px;color:var(--text-dim);letter-spacing:.02em}
+
+.report-posts-hdr{font-family:'Gabarito',sans-serif;font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:12px;letter-spacing:-0.15px}
+.report-table{background:var(--surface);border-radius:10px;overflow:hidden;box-shadow:var(--card-shadow)}
+.report-table-head{display:grid;grid-template-columns:1fr 64px 72px 64px 64px 58px;padding:9px 16px;border-bottom:1px solid var(--border)}
+.report-table-head .rt-col{font-family:'Gabarito',sans-serif;font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+.report-table-row{display:grid;grid-template-columns:1fr 64px 72px 64px 64px 58px;padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.03);transition:background .1s;align-items:center}
+.report-table-row:last-child{border-bottom:none}
+.report-table-row:hover{background:rgba(255,255,255,.03)}
+.rt-col{font-family:'Gabarito',sans-serif;font-size:13px;color:var(--text-primary)}
+.rt-muted{color:var(--text-secondary);font-size:12px}
+.rt-ctr{color:var(--green);font-weight:600;font-size:13px}
+.rt-col-post{display:flex;align-items:center;gap:10px;min-width:0}
+.rt-thumb{width:34px;height:34px;border-radius:5px;background:var(--surface-2);flex-shrink:0;border:1px solid var(--border)}
+.rt-post-name{font-size:13px;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Gabarito',sans-serif}
+
+.reports-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;padding-bottom:60px}
+.reports-empty-icon{width:44px;height:44px;border-radius:10px;background:var(--surface);box-shadow:var(--card-shadow);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.reports-empty p{font-family:'Gabarito',sans-serif;font-size:13px;color:var(--text-muted);text-align:center;line-height:1.5;max-width:220px}
 </style>
 </head>
 <body>
@@ -357,6 +406,12 @@ const DockCircle = () => h('svg',{width:18,height:18,viewBox:'0 0 18 18',fill:'n
 const DockBox = () => h('svg',{width:18,height:18,viewBox:'0 0 18 18',fill:'none'},
   h('rect',{x:2,y:2,width:10,height:10,rx:2,stroke:'white',strokeWidth:1.5}),
   h('path',{d:'M10 8h5.5M13 5.5l2.5 2.5L13 10.5',stroke:'white',strokeWidth:1.5,strokeLinecap:'round',strokeLinejoin:'round'})
+);
+
+const DockChart = () => h('svg',{width:18,height:18,viewBox:'0 0 18 18',fill:'none'},
+  h('rect',{x:2,y:9,width:3,height:7,rx:1,fill:'white'}),
+  h('rect',{x:7,y:5,width:3,height:11,rx:1,fill:'white'}),
+  h('rect',{x:12,y:2,width:3,height:14,rx:1,fill:'white'})
 );
 
 const DockPlay = () => h('svg',{width:18,height:18,viewBox:'0 0 18 18',fill:'none'},
@@ -397,6 +452,7 @@ function Topbar({screen, credits}) {
     generated:       ['Projects', 'Summer Glow — Q3', 'Video Generation'],
     imageGeneration: ['Image Generation'],
     settings:        ['Settings'],
+    reports:         ['Reports'],
   };
   const crumbs = crumbMap[screen] || ['Projects'];
   return h('div',{className:'topbar'},
@@ -431,6 +487,10 @@ function Dock({screen, onNav}) {
     h('div',{className:'dock-wrap'},
       h('button',{className:`dock-btn${screen==='brandIdentity'?' active':''}`,onClick:()=>onNav('brandIdentity')}, h(DockCircle)),
       h('span',{className:'dock-tip'},'Brand Identity')
+    ),
+    h('div',{className:'dock-wrap'},
+      h('button',{className:`dock-btn${screen==='reports'?' active':''}`,onClick:()=>onNav('reports')}, h(DockChart)),
+      h('span',{className:'dock-tip'},'Reports')
     ),
     h('div',{className:'dock-sep'}),
     h('div',{className:'dock-wrap'},
@@ -974,6 +1034,141 @@ function StoryboardScreen({onNav}) {
   );
 }
 
+/* ── Reports Screen ───────────────────────────────────────────────────────── */
+const REPORTS_CAMPAIGNS = [
+  {
+    id:'sg', name:'Summer Glow — TikTok Q3', meta:'TikTok · Lead capture · Active',
+    status:'Active', badge:'badge-active',
+    summary:{views:'124K', engagement:'4.2%', ctr:'2.8%', posts:'8 / 16'},
+    posts:[
+      {label:'Morning routine ft. Glow Serum',    date:'Jun 3',  views:'18.2K', likes:'1,420', shares:'340',   ctr:'3.1%', bar:57},
+      {label:'3 signs your skin needs hydration',  date:'Jun 5',  views:'24.6K', likes:'2,100', shares:'512',   ctr:'2.9%', bar:77},
+      {label:'Honest 2-week skin diary',           date:'Jun 7',  views:'31.8K', likes:'2,840', shares:'680',   ctr:'4.2%', bar:100},
+      {label:"What's actually in Glow Serum?",     date:'Jun 9',  views:'15.3K', likes:'980',   shares:'220',   ctr:'1.8%', bar:48},
+      {label:'POV: your morning skin routine',     date:'Jun 11', views:'28.4K', likes:'3,100', shares:'890',   ctr:'5.1%', bar:89},
+      {label:'Why I switched my serum (honest)',   date:'Jun 13', views:'12.1K', likes:'760',   shares:'180',   ctr:'1.4%', bar:38},
+      {label:'Glow check — 30 days in',           date:'Jun 15', views:'22.7K', likes:'1,920', shares:'420',   ctr:'3.6%', bar:71},
+      {label:'The serum that actually works?',    date:'Jun 17', views:'19.4K', likes:'1,610', shares:'290',   ctr:'2.3%', bar:61},
+    ],
+  },
+  {
+    id:'ar', name:'Autumn Refresh — Instagram Q3', meta:'Instagram · Awareness · Draft',
+    status:'Draft', badge:'badge-draft',
+    summary:null, posts:[],
+  },
+  {
+    id:'wr', name:'Winter Radiance — TikTok Q4', meta:'TikTok · Brand awareness · Completed',
+    status:'Completed', badge:'badge-completed',
+    summary:{views:'890K', engagement:'6.1%', ctr:'3.4%', posts:'20 / 20'},
+    posts:[
+      {label:'Winter skin survival guide',           date:'Apr 12', views:'68.4K', likes:'5,210', shares:'1,240', ctr:'2.8%', bar:61},
+      {label:"Your skin is dry, not 'normal'",       date:'Apr 14', views:'112K',  likes:'9,800', shares:'2,100', ctr:'4.1%', bar:100},
+      {label:"Glow all winter — here's how",         date:'Apr 16', views:'55.2K', likes:'4,320', shares:'980',   ctr:'3.2%', bar:49},
+      {label:'5 AM winter routine',                  date:'Apr 18', views:'89.3K', likes:'7,400', shares:'1,680', ctr:'5.6%', bar:80},
+      {label:'The cold-weather serum hack',          date:'Apr 20', views:'47.1K', likes:'3,820', shares:'720',   ctr:'2.4%', bar:42},
+      {label:'Real skin, real winter',               date:'Apr 22', views:'73.8K', likes:'6,120', shares:'1,340', ctr:'3.8%', bar:66},
+      {label:"Why your moisturiser isn't working",   date:'Apr 24', views:'94.5K', likes:'8,200', shares:'1,920', ctr:'4.9%', bar:84},
+      {label:'Final results — 20 posts later',      date:'May 3',  views:'81.2K', likes:'7,010', shares:'1,580', ctr:'4.3%', bar:73},
+    ],
+  },
+];
+
+function CampaignReport({campaign}) {
+  const s = campaign.summary;
+  const stats = [
+    {label:'Total views',      value:s.views},
+    {label:'Avg engagement',   value:s.engagement},
+    {label:'Avg CTR',          value:s.ctr},
+    {label:'Posts published',  value:s.posts},
+  ];
+  const maxBar = Math.max(...campaign.posts.map(p=>p.bar));
+
+  return h('div',{className:'report-body'},
+    h('div',{className:'report-header'},
+      h('div',null,
+        h('h2',{className:'report-title'},campaign.name),
+        h('p',{className:'report-subtitle'},campaign.meta)
+      ),
+      h('span',{className:`badge ${campaign.badge}`},campaign.status)
+    ),
+    h('div',{className:'report-stats-grid'},
+      stats.map(st=>h('div',{key:st.label,className:'report-stat-card'},
+        h('div',{className:'report-stat-value'},st.value),
+        h('div',{className:'report-stat-label'},st.label)
+      ))
+    ),
+    h('div',{className:'report-chart-wrap'},
+      h('div',{className:'report-chart-title'},'Views per post'),
+      h('div',{className:'report-chart'},
+        campaign.posts.map((p,i)=>h('div',{key:i,className:'report-bar-col'},
+          h('div',{className:'report-bar',style:{height:`${Math.round((p.bar/maxBar)*100)}%`}}),
+          h('div',{className:'report-bar-lbl'},`P${i+1}`)
+        ))
+      )
+    ),
+    h('div',{className:'report-posts-hdr'},'Post performance'),
+    h('div',{className:'report-table'},
+      h('div',{className:'report-table-head'},
+        h('div',{className:'rt-col rt-col-post'},'Post'),
+        h('div',{className:'rt-col'},'Date'),
+        h('div',{className:'rt-col'},'Views'),
+        h('div',{className:'rt-col'},'Likes'),
+        h('div',{className:'rt-col'},'Shares'),
+        h('div',{className:'rt-col'},'CTR')
+      ),
+      campaign.posts.map((p,i)=>h('div',{key:i,className:'report-table-row'},
+        h('div',{className:'rt-col rt-col-post'},
+          h('div',{className:'rt-thumb'}),
+          h('span',{className:'rt-post-name'},p.label)
+        ),
+        h('div',{className:'rt-col rt-muted'},p.date),
+        h('div',{className:'rt-col'},p.views),
+        h('div',{className:'rt-col'},p.likes),
+        h('div',{className:'rt-col'},p.shares),
+        h('div',{className:'rt-col rt-ctr'},p.ctr)
+      ))
+    )
+  );
+}
+
+function ReportsScreen() {
+  const [selectedId, setSelectedId] = useState('sg');
+  const selected = REPORTS_CAMPAIGNS.find(c=>c.id===selectedId);
+
+  return h('div',{className:'reports-screen'},
+    h('div',{className:'reports-sidebar'},
+      h('div',{className:'reports-sidebar-hdr'},'Reports'),
+      h('div',{className:'reports-camp-list'},
+        REPORTS_CAMPAIGNS.map(c=>h('div',{
+          key:c.id,
+          className:`reports-camp-item${selectedId===c.id?' active':''}`,
+          onClick:()=>setSelectedId(c.id)
+        },
+          h('div',{className:'reports-camp-name'},c.name),
+          h('div',{className:'reports-camp-row'},
+            h('span',{className:`badge ${c.badge}`,style:{fontSize:10,padding:'2px 6px'}},c.status),
+            c.summary && h('span',{className:'reports-camp-stat'},c.summary.views+' views')
+          )
+        ))
+      )
+    ),
+    h('div',{className:'reports-content'},
+      selected && selected.summary
+        ? h(CampaignReport,{campaign:selected})
+        : h('div',{className:'reports-empty'},
+            h('div',{className:'reports-empty-icon'},
+              h('svg',{width:20,height:20,viewBox:'0 0 18 18',fill:'none'},
+                h('rect',{x:2,y:9,width:3,height:7,rx:1,fill:'rgba(255,255,255,0.3)'}),
+                h('rect',{x:7,y:5,width:3,height:11,rx:1,fill:'rgba(255,255,255,0.3)'}),
+                h('rect',{x:12,y:2,width:3,height:14,rx:1,fill:'rgba(255,255,255,0.3)'})
+              )
+            ),
+            h('p',null,"This campaign hasn't launched yet — performance data will appear here once posts start publishing.")
+          )
+    )
+  );
+}
+
 /* ── Generated Videos Screen ─────────────────────────────────────────────── */
 function SettingsScreen() {
   return h('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',height:'100%',paddingBottom:60}},
@@ -1096,6 +1291,7 @@ function App() {
     generated:       h(GeneratedScreen,     {onNav:handleNav}),
     imageGeneration: h(ImageGenerationScreen,{onNav:handleNav}),
     settings:        h(SettingsScreen,        {onNav:handleNav}),
+    reports:         h(ReportsScreen,         {onNav:handleNav}),
   };
 
   return h('div',{className:'app'},
