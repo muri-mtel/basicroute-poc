@@ -785,9 +785,9 @@ function CampaignWizard({onNav, onCredits}) {
   const pendingIdx = isWaiting ? (chatStep-1)/2 : -1;
 
   const vibeOpts = [
-    {label:'Soft Morning',    grad:'linear-gradient(145deg,#f5e0cb,#d4a882)',
+    {label:'Soft Morning',    img:'assets/moodboard 01.png',
      fields:{vibe:'Soft Morning — warm pastel tones, natural window light, intimate close-ups of skin and texture. The visual language of a slow, intentional morning.'}},
-    {label:'Clean Confidence',grad:'linear-gradient(145deg,#dde2e8,#adb5be)',
+    {label:'Clean Confidence',img:'assets/moodboard 02.png',
      fields:{vibe:'Clean Confidence — crisp whites, bold product framing, direct eye contact. The feeling of knowing exactly what your skin needs.'}},
   ];
 
@@ -801,7 +801,7 @@ function CampaignWizard({onNav, onCredits}) {
     );
     if (pendingIdx === 7) return h('div',{className:'vibe-choice-wrap'},
       vibeOpts.map(v=>h('div',{key:v.label,className:'vibe-choice-card',onClick:()=>handleChoice(7,v.label+' — very Lumeo.',v.fields)},
-        h('div',{className:'vibe-choice-img',style:{background:v.grad}}),
+        h('img',{className:'vibe-choice-img',src:v.img,alt:v.label,draggable:false,style:{width:'100%',display:'block',objectFit:'cover'}}),
         h('div',{className:'vibe-choice-name'},v.label)
       ))
     );
@@ -1113,17 +1113,16 @@ function S4({onNav}) {
 /* ── Storyboard Screen ────────────────────────────────────────────────────── */
 function StoryboardScreen({onNav}) {
   const SCENES = [
-    {label:'Product reveal',       seed:'serum1'},
-    {label:'Close-up texture',     seed:'skincare2'},
-    {label:'Morning routine',      seed:'morning3'},
-    {label:'Before & after',       seed:'glow4'},
-    {label:'Ingredient spotlight', seed:'botanical5'},
-    {label:'Application technique',seed:'routine6'},
-    {label:'Glow result',          seed:'glowing7'},
-    {label:'CTA overlay',          seed:'lifestyle8'},
+    {label:'Product reveal',        img:'assets/ChatGPT Image Jun 10, 2026, 10_12_08 AM (1).png'},
+    {label:'Close-up texture',      img:'assets/ChatGPT Image Jun 10, 2026, 10_12_08 AM (2).png'},
+    {label:'Morning routine',       img:'assets/ChatGPT Image Jun 10, 2026, 10_12_09 AM (3).png'},
+    {label:'Before & after',        img:'assets/ChatGPT Image Jun 10, 2026, 10_12_09 AM (4).png'},
+    {label:'Ingredient spotlight',  img:'assets/ChatGPT Image Jun 10, 2026, 10_12_09 AM (5).png'},
+    {label:'Application technique', img:'assets/ChatGPT Image Jun 10, 2026, 10_12_09 AM (6).png'},
+    {label:'Glow result',           img:'assets/ChatGPT Image Jun 10, 2026, 10_12_09 AM (7).png'},
+    {label:'CTA overlay',           img:'assets/ChatGPT Image Jun 10, 2026, 10_12_09 AM (8).png'},
   ];
-  const imgUrl = (seed) => `https://picsum.photos/seed/${seed}/480/300`;
-  const makeFrames = () => SCENES.map((s,i) => ({id:i, num:i+1, label:s.label, seed:s.seed}));
+  const makeFrames = () => SCENES.map((s,i) => ({id:i, num:i+1, label:s.label, img:s.img}));
   const [activePost, setActivePost] = useState(0);
   const [frames, setFrames] = useState([makeFrames(),makeFrames(),makeFrames(),makeFrames()]);
   const [dragIdx, setDragIdx] = useState(null);
@@ -1168,7 +1167,7 @@ function StoryboardScreen({onNav}) {
           onDragEnd:()=>{ setDragIdx(null); setDragOver(null); },
           className:'sb-frame'+(dragIdx===i?' dragging':'')+(dragOver===i&&dragIdx!==i?' drag-over':''),
         },
-          h('img',{className:'sb-frame-img', src:imgUrl(frame.seed), alt:frame.label, draggable:false}),
+          h('img',{className:'sb-frame-img', src:frame.img, alt:frame.label, draggable:false}),
           h('div',{className:'sb-frame-meta'},
             h('span',{className:'sb-frame-num'},`${frame.num}`),
             h('span',{className:'sb-frame-label'},frame.label)
