@@ -183,10 +183,20 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg
 .sb-frame:active{cursor:grabbing}
 .sb-frame.drag-over{border-color:var(--blue);box-shadow:0 0 0 2px rgba(76,133,245,0.3)}
 .sb-frame.dragging{opacity:.35}
+.sb-frame-img-wrap{position:relative}
 .sb-frame-img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:var(--surface)}
+.sb-frame-actions{position:absolute;bottom:7px;right:7px;display:flex;gap:5px;opacity:0;transition:opacity .15s}
+.sb-frame-img-wrap:hover .sb-frame-actions{opacity:1}
+.sb-frame-btn{background:rgba(0,0,0,.62);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);border-radius:6px;color:var(--text-primary);font-size:11px;font-weight:600;font-family:'Gabarito',sans-serif;padding:4px 9px;cursor:pointer;transition:background .12s,border-color .12s;line-height:1.4}
+.sb-frame-btn:hover{background:rgba(0,0,0,.82);border-color:rgba(255,255,255,.3)}
+.sb-frame-btn.regen{color:#a8c4ff}
 .sb-frame-meta{padding:8px 10px 9px;display:flex;align-items:baseline;gap:6px}
 .sb-frame-num{font-size:9px;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.08em;font-family:'Inter',sans-serif;flex-shrink:0}
 .sb-frame-label{font-size:11px;color:rgba(255,255,255,.6);line-height:1.3;font-family:'Gabarito',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-regen-wrap{border-top:1px solid var(--border);padding:8px 10px;display:flex;gap:6px}
+.sb-regen-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text-primary);font-size:12px;font-family:'Inter',sans-serif;padding:6px 9px;outline:none}
+.sb-regen-input:focus{border-color:rgba(255,255,255,.25)}
+.sb-regen-go{background:var(--blue);border:none;border-radius:7px;color:#fff;font-size:11px;font-weight:700;font-family:'Gabarito',sans-serif;padding:6px 11px;cursor:pointer}
 
 /* ── Campaign result — 4 video cards ────────────────────────────────────── */
 .camp-videos-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -1127,6 +1137,8 @@ function StoryboardScreen({onNav}) {
   const [frames, setFrames] = useState([makeFrames(),makeFrames(),makeFrames(),makeFrames()]);
   const [dragIdx, setDragIdx] = useState(null);
   const [dragOver, setDragOver] = useState(null);
+  const [regenIdx, setRegenIdx] = useState(null);
+  const [regenPrompt, setRegenPrompt] = useState('');
 
   const handleDrop = (i) => {
     if(dragIdx === null || dragIdx === i){ setDragIdx(null); setDragOver(null); return; }
@@ -1167,7 +1179,17 @@ function StoryboardScreen({onNav}) {
           onDragEnd:()=>{ setDragIdx(null); setDragOver(null); },
           className:'sb-frame'+(dragIdx===i?' dragging':'')+(dragOver===i&&dragIdx!==i?' drag-over':''),
         },
-          h('img',{className:'sb-frame-img', src:frame.img, alt:frame.label, draggable:false}),
+          h('div',{className:'sb-frame-img-wrap'},
+            h('img',{className:'sb-frame-img', src:frame.img, alt:frame.label, draggable:false}),
+            h('div',{className:'sb-frame-actions'},
+              h('button',{className:'sb-frame-btn regen', onMouseDown:e=>e.stopPropagation(), onClick:e=>{ e.stopPropagation(); setRegenIdx(regenIdx===i?null:i); setRegenPrompt(''); }}, '↺ Regen'),
+              h('button',{className:'sb-frame-btn', onMouseDown:e=>e.stopPropagation(), onClick:e=>e.stopPropagation()}, '↓ Save')
+            )
+          ),
+          regenIdx===i && h('div',{className:'sb-regen-wrap', onMouseDown:e=>e.stopPropagation()},
+            h('input',{className:'sb-regen-input', placeholder:'Describe what you want instead…', value:regenPrompt, onInput:e=>setRegenPrompt(e.target.value), autoFocus:true}),
+            h('button',{className:'sb-regen-go', onClick:e=>{ e.stopPropagation(); setRegenIdx(null); setRegenPrompt(''); }},'Go')
+          ),
           h('div',{className:'sb-frame-meta'},
             h('span',{className:'sb-frame-num'},`${frame.num}`),
             h('span',{className:'sb-frame-label'},frame.label)
