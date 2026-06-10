@@ -87,8 +87,8 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg
 .campaigns-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
 .campaign-card{background:var(--surface);border:none;border-radius:12px;overflow:hidden;cursor:pointer;transition:box-shadow .15s;position:relative;box-shadow:var(--card-shadow)}
 .campaign-card:hover{box-shadow:0 4px 24px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.07)}
-.campaign-card-new{display:flex;align-items:center;justify-content:center;border:1px dashed #dfdfdf;box-shadow:none;background:transparent;min-height:314px}
-.campaign-card-new:hover{border-color:rgba(255,255,255,0.5);box-shadow:none}
+.campaign-card-new{display:flex;align-items:center;justify-content:center;border:none;box-shadow:none;background-color:transparent;background-image:url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23484848' stroke-width='1.5' stroke-dasharray='12%2c9' stroke-linecap='square'/%3e%3c/svg%3e");background-repeat:no-repeat;background-size:100% 100%;min-height:314px}
+.campaign-card-new:hover{background-image:url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23606060' stroke-width='1.5' stroke-dasharray='12%2c9' stroke-linecap='square'/%3e%3c/svg%3e");box-shadow:none}
 .campaign-thumbs-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:20px 20px 0}
 .campaign-thumb{width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover;display:block}
 .campaign-info{padding:16px 20px 20px}
@@ -138,14 +138,14 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg
 .card-d-body{padding:16px 20px}
 .field-row{margin-bottom:12px}
 .field-lbl{font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;font-family:'Inter',sans-serif}
-.field-val{min-height:32px;border-radius:6px;padding:7px 10px;font-size:13px;font-family:'Gabarito',sans-serif;border:1px solid var(--border)}
-.field-empty{background:var(--surface-2);color:var(--text-muted)}
+.field-val{min-height:36px;border-radius:6px;padding:8px 11px;font-size:14px;line-height:1.55;font-family:'Gabarito',sans-serif;border:1px solid var(--border)}
+.field-empty{background:var(--surface-2);color:var(--text-muted);font-size:13px}
 .field-filled{background:var(--blue-bg);border-color:var(--blue-border);color:var(--text-primary)}
 
 /* ── Chat ─────────────────────────────────────────────────────────────────── */
 .chat-area{display:flex;flex-direction:column;gap:14px;overflow-y:auto;max-height:380px;padding-right:4px}
 .chat-row{display:flex;align-items:flex-end;gap:8px}
-.chat-row.user{flex-direction:row-reverse}
+.chat-row.user{justify-content:flex-end}
 .chat-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;font-family:'Gabarito',sans-serif}
 .av-ai{background:var(--surface-2);color:var(--text-primary);border:1px solid var(--border)}
 .av-user{background:var(--border);color:var(--text-secondary)}
@@ -306,7 +306,7 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg
 /* ── Wizard new floating layout ──────────────────────────────────────────── */
 .wz-outer{padding:36px 32px 120px;overflow-y:auto;height:100%;display:flex;flex-direction:column}
 .wz-row{display:flex;align-items:flex-start;gap:20px;margin:0 auto;width:100%;max-width:500px;transition:max-width .5s cubic-bezier(.4,0,.2,1)}
-.wz-row.brief-open{max-width:1080px}
+.wz-row.brief-open{max-width:1220px}
 
 .wz-chat-card{width:500px;flex-shrink:0;background:var(--surface);border-radius:16px;box-shadow:0 8px 48px rgba(0,0,0,.72),0 0 0 1px rgba(255,255,255,.07);display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:2;max-height:650px}
 .wz-chat-messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;min-height:160px}
@@ -327,6 +327,41 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg
 .fi-hint{font-size:11px;color:var(--text-dim);font-family:'Inter',sans-serif;white-space:nowrap;flex-shrink:0}
 .fi-cursor{display:inline-block;width:1.5px;height:12px;background:var(--text-primary);margin-left:1px;animation:blink .55s step-end infinite;vertical-align:middle}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── Prompt panel ────────────────────────────────────────────────────────── */
+.wz-row.prompt-open{max-width:1340px}
+.wz-row.prompt-open .wz-brief-card{flex:0 0 310px}
+.wz-prompt-card{flex:1;min-width:320px;background:var(--surface);border-radius:16px;box-shadow:var(--card-shadow);overflow:hidden;opacity:0;transform:translateX(28px);transition:opacity .45s ease,transform .45s ease;pointer-events:none;display:flex;flex-direction:column;max-height:650px}
+.wz-prompt-card.visible{opacity:1;transform:none;pointer-events:auto}
+.wz-prompt-body{flex:1;overflow-y:auto}
+.prompt-mode-wrap{display:flex;gap:4px}
+.prompt-mode-btn{background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-family:'Gabarito',sans-serif;font-size:11px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .12s}
+.prompt-mode-btn:hover{border-color:rgba(255,255,255,.2);color:var(--text-secondary)}
+.prompt-mode-btn.active{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:var(--text-primary)}
+
+/* Choice buttons & vibe cards */
+.choice-btn-wrap{border-top:1px solid var(--border);padding:10px 14px;display:flex;gap:8px;flex-shrink:0}
+.choice-btn{flex:1;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;font-family:'Gabarito',sans-serif;font-size:13px;font-weight:600;color:var(--text-primary);cursor:pointer;transition:background .12s,border-color .12s}
+.choice-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22)}
+.vibe-choice-wrap{border-top:1px solid var(--border);padding:12px 14px;display:flex;gap:10px;flex-shrink:0}
+.vibe-choice-card{flex:1;border-radius:10px;overflow:hidden;cursor:pointer;border:1.5px solid var(--border);transition:border-color .15s,box-shadow .15s;background:var(--surface-2)}
+.vibe-choice-card:hover{border-color:rgba(255,255,255,.3);box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.vibe-choice-img{height:76px}
+.vibe-choice-name{padding:7px 10px 9px;font-family:'Gabarito',sans-serif;font-size:12px;font-weight:600;color:var(--text-primary)}
+
+/* Prompt text view */
+.prompt-sections{padding:14px 18px;display:flex;flex-direction:column;gap:14px}
+.ps-item{}
+.ps-head{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:4px;font-family:'Inter',sans-serif}
+.ps-body{font-size:13px;line-height:1.6;color:var(--text-secondary);font-family:'Inter',sans-serif}
+.ps-divider{border:none;border-top:1px solid var(--border);margin:0}
+
+/* Node diagram view */
+.nd-wrap{padding:16px 14px;display:flex;justify-content:center}
+.nd-node{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;height:72px;overflow:hidden;position:absolute}
+.nd-main{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.05)}
+.nd-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:3px;font-family:'Inter',sans-serif}
+.nd-val{font-size:11px;color:var(--text-primary);font-family:'Gabarito',sans-serif;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
 
 /* ── Reports ─────────────────────────────────────────────────────────────── */
 .reports-screen{display:flex;height:100%;overflow:hidden;animation:screenIn 220ms ease forwards}
@@ -441,7 +476,7 @@ const CalIcon = () => h('svg',{width:28,height:28,viewBox:'0 0 24 24',fill:'none
 );
 
 /* ── Topbar ───────────────────────────────────────────────────────────────── */
-function Topbar({screen, credits}) {
+function Topbar({screen, credits, onNav}) {
   const raw = Math.round(credits * 8.4);
   const crumbMap = {
     dashboard:    ['Projects'],
@@ -457,7 +492,7 @@ function Topbar({screen, credits}) {
   const crumbs = crumbMap[screen] || ['Projects'];
   return h('div',{className:'topbar'},
     h('div',{className:'topbar-left'},
-      h('div',{className:'topbar-logo'},
+      h('div',{className:'topbar-logo',style:{cursor:'pointer'},onClick:()=>onNav('dashboard')},
         h('div',{className:'topbar-logo-icon'}, h(LogoIcon)),
         h('span',{className:'topbar-logo-text'},'basicroute')
       ),
@@ -608,9 +643,7 @@ const WIZARD_EXCHANGES = [
    }},
   {ai:"For the vibe — 'Soft Morning' (warm pastels, intimate close-ups) or 'Clean Confidence' (crisp whites, bold product framing)?",
    user:"Soft Morning — very Lumeo.",
-   fields:{
-     vibe:"Soft Morning — warm pastel tones, natural window light, intimate close-ups of skin and texture. The visual language of a slow, intentional morning. Matches Lumeo's brand identity."
-   }},
+   fields:{}},
   {ai:"Last one — brand kit, fresh uploaded assets, or generate everything from scratch?",
    user:"Brand kit.",
    fields:{
@@ -629,6 +662,43 @@ const WZ_BRIEF_FIELDS = [
   {label:'Visual direction',   key:'vibe'},
   {label:'Assets',             key:'assets'},
 ];
+
+function NodeDiagram({brief}) {
+  const W=340, NH=72;
+  const nodes=[
+    {l:'Campaign',   v:'Summer Glow — TikTok Q3', x:70, y:8,   w:200, main:true},
+    {l:'Objective',  v:brief.campaignObjective,    x:8,  y:100, w:148},
+    {l:'Audience',   v:brief.targetAudience,       x:184,y:100, w:148},
+    {l:'Emotion',    v:brief.desiredEmotion,       x:8,  y:185, w:148},
+    {l:'Product',    v:brief.featuredProduct,      x:184,y:185, w:148},
+    {l:'Vibe',       v:brief.vibe,                 x:8,  y:270, w:148},
+    {l:'Assets',     v:brief.assets,               x:184,y:270, w:148},
+  ];
+  const H=270+NH+12;
+  const lines=[
+    [170,8+NH,  82, 100],
+    [170,8+NH, 258, 100],
+    [82, 100+NH, 82, 185],
+    [258,100+NH,258, 185],
+    [82, 185+NH, 82, 270],
+    [258,185+NH,258, 270],
+  ];
+  return h('div',{className:'nd-wrap'},
+    h('div',{style:{position:'relative',width:W,height:H}},
+      h('svg',{width:W,height:H,style:{position:'absolute',top:0,left:0,pointerEvents:'none'}},
+        lines.map(([x1,y1,x2,y2],i)=>
+          h('line',{key:i,x1,y1,x2,y2,stroke:'rgba(255,255,255,0.13)',strokeWidth:1,strokeDasharray:'3,4'})
+        )
+      ),
+      nodes.map((n,i)=>
+        h('div',{key:i,className:`nd-node${n.main?' nd-main':''}`,style:{left:n.x,top:n.y,width:n.w}},
+          h('div',{className:'nd-lbl'},n.l),
+          h('div',{className:'nd-val'},n.v||'—')
+        )
+      )
+    )
+  );
+}
 
 function FakeInput({text, onSend}) {
   const [displayed, setDisplayed] = useState('');
@@ -668,10 +738,14 @@ function FakeInput({text, onSend}) {
 function CampaignWizard({onNav, onCredits}) {
   const [chatStep, setChatStep] = useState(0);
   const [brief, setBrief] = useState({});
+  const [promptView, setPromptView] = useState('text');
+  const [choiceAnswers, setChoiceAnswers] = useState({});
   const chatEndRef = useRef(null);
   const N = WIZARD_EXCHANGES.length;
 
-  const showBrief = chatStep >= 6;
+  const showBrief  = chatStep >= 6;
+  const allDone    = chatStep >= N*2+1;
+  const showPrompt = allDone;
 
   useEffect(()=>{ if(chatEndRef.current) chatEndRef.current.scrollIntoView({behavior:'smooth'}); },[chatStep]);
 
@@ -684,20 +758,65 @@ function CampaignWizard({onNav, onCredits}) {
     setChatStep((idx+1)*2);
   };
 
+  const handleChoice = (idx, text, extraFields={}) => {
+    setChoiceAnswers(prev=>({...prev,[idx]:text}));
+    const merged = {...WIZARD_EXCHANGES[idx].fields,...extraFields};
+    if (Object.keys(merged).length > 0) {
+      setBrief(prev=>({...prev,...merged}));
+      onCredits(-4);
+    }
+    setChatStep((idx+1)*2);
+  };
+
   const buildMessages = () => {
     const msgs=[];
     for(let i=0;i<N;i++){
       if(chatStep>=i*2)  msgs.push({type:'ai',text:WIZARD_EXCHANGES[i].ai,typing:chatStep===i*2,key:`ai${i}`});
-      if(chatStep>i*2+1) msgs.push({type:'user',text:WIZARD_EXCHANGES[i].user,key:`user${i}`});
+      if(chatStep>i*2+1) msgs.push({type:'user',text:choiceAnswers[i]||WIZARD_EXCHANGES[i].user,key:`user${i}`});
     }
     if(chatStep===N*2)  msgs.push({type:'ai',text:WIZARD_FINAL_AI,typing:true, key:'ai-final'});
     if(chatStep>=N*2+1) msgs.push({type:'ai',text:WIZARD_FINAL_AI,typing:false,key:'ai-final'});
     return msgs;
   };
 
-  const isWaiting = chatStep%2===1 && chatStep<N*2;
+  const isWaiting  = chatStep%2===1 && chatStep<N*2;
   const pendingIdx = isWaiting ? (chatStep-1)/2 : -1;
-  const allDone = chatStep>=N*2+1;
+
+  const vibeOpts = [
+    {label:'Soft Morning',    grad:'linear-gradient(145deg,#f5e0cb,#d4a882)',
+     fields:{vibe:'Soft Morning — warm pastel tones, natural window light, intimate close-ups of skin and texture. The visual language of a slow, intentional morning.'}},
+    {label:'Clean Confidence',grad:'linear-gradient(145deg,#dde2e8,#adb5be)',
+     fields:{vibe:'Clean Confidence — crisp whites, bold product framing, direct eye contact. The feeling of knowing exactly what your skin needs.'}},
+  ];
+
+  const renderInputArea = () => {
+    if (!isWaiting) return null;
+    if (pendingIdx === 1) return h('div',{className:'choice-btn-wrap'},
+      ['Image','Video'].map(t=>h('button',{key:t,className:'choice-btn',onClick:()=>handleChoice(1,t)},t))
+    );
+    if (pendingIdx === 2) return h('div',{className:'choice-btn-wrap'},
+      ['Short-form','Long-form'].map(t=>h('button',{key:t,className:'choice-btn',onClick:()=>handleChoice(2,t)},t))
+    );
+    if (pendingIdx === 7) return h('div',{className:'vibe-choice-wrap'},
+      vibeOpts.map(v=>h('div',{key:v.label,className:'vibe-choice-card',onClick:()=>handleChoice(7,v.label+' — very Lumeo.',v.fields)},
+        h('div',{className:'vibe-choice-img',style:{background:v.grad}}),
+        h('div',{className:'vibe-choice-name'},v.label)
+      ))
+    );
+    return h(FakeInput,{key:`fi-${pendingIdx}`,text:WIZARD_EXCHANGES[pendingIdx].user,onSend:()=>handleSend(pendingIdx)});
+  };
+
+  const PROMPT_SECTIONS = [
+    {head:'Objective',        body:brief.campaignObjective},
+    {head:'Success metric',   body:brief.successMetric},
+    {head:'Target audience',  body:brief.targetAudience},
+    {head:'Platform behavior',body:brief.platformBehavior},
+    {head:'Desired emotion',  body:brief.desiredEmotion},
+    {head:'Featured product', body:brief.featuredProduct},
+    {head:'Content approach', body:brief.contentTypeBrief},
+    {head:'Visual direction', body:brief.vibe},
+    {head:'Assets',           body:brief.assets},
+  ];
 
   const chatCard = h('div',{className:'wz-chat-card'},
     h('div',{className:'card-d-hdr'},
@@ -721,11 +840,7 @@ function CampaignWizard({onNav, onCredits}) {
       ),
       h('div',{ref:chatEndRef})
     ),
-    isWaiting && h(FakeInput,{
-      key:`fi-${pendingIdx}`,
-      text:WIZARD_EXCHANGES[pendingIdx].user,
-      onSend:()=>handleSend(pendingIdx)
-    })
+    renderInputArea()
   );
 
   const briefCard = h('div',{className:`wz-brief-card${showBrief?' visible':''}`},
@@ -743,14 +858,37 @@ function CampaignWizard({onNav, onCredits}) {
     )
   );
 
-  return h('div',{className:'wz-outer screen-enter'},
-    h('div',{className:`wz-row${showBrief?' brief-open':''}`},
-      chatCard,
-      briefCard
+  const promptCard = h('div',{className:`wz-prompt-card${showPrompt?' visible':''}`},
+    h('div',{className:'card-d-hdr'},
+      h('span',{className:'card-d-title'},'Full prompt'),
+      h('div',{className:'prompt-mode-wrap'},
+        h('button',{className:`prompt-mode-btn${promptView==='text'?' active':''}`,onClick:()=>setPromptView('text')},'Text'),
+        h('button',{className:`prompt-mode-btn${promptView==='nodes'?' active':''}`,onClick:()=>setPromptView('nodes')},'Nodes')
+      )
     ),
+    h('div',{className:'wz-prompt-body'},
+      promptView==='text'
+        ? h('div',{className:'prompt-sections'},
+            PROMPT_SECTIONS.map((s,i)=>h('div',{key:i},
+              i>0 && h('hr',{className:'ps-divider',style:{marginBottom:14}}),
+              h('div',{className:'ps-item'},
+                h('div',{className:'ps-head'},s.head),
+                h('div',{className:'ps-body'},s.body||'—')
+              )
+            ))
+          )
+        : h(NodeDiagram,{brief})
+    )
+  );
+
+  const rowClass = `wz-row${showBrief?' brief-open':''}${showPrompt?' prompt-open':''}`;
+  const barMax   = showPrompt ? 1340 : showBrief ? 1220 : 500;
+
+  return h('div',{className:'wz-outer screen-enter'},
+    h('div',{className:rowClass}, chatCard, briefCard, promptCard),
     allDone && h('div',{
       className:'bottom-bar',
-      style:{width:'100%',maxWidth:showBrief?1080:500,margin:'20px auto 0'}
+      style:{width:'100%',maxWidth:barMax,margin:'20px auto 0'}
     },
       h('div',null,
         h('div',{style:{fontWeight:600,fontSize:14,color:'var(--text-primary)',marginBottom:3,fontFamily:"'Gabarito',sans-serif"}},'Brief looks good?'),
@@ -1295,7 +1433,7 @@ function App() {
   };
 
   return h('div',{className:'app'},
-    h(Topbar,{screen, credits}),
+    h(Topbar,{screen, credits, onNav:handleNav}),
     h('div',{className:'content-area'},
       screenMap[screen] || screenMap['dashboard']
     ),
