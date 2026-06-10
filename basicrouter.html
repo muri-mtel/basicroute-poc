@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>basicrouter</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-feature-settings:'cv11' 1,'ss01' 1}
+:root{
+  /* Legacy tokens — kept for JS compatibility */
+  --blue-900:#0d1f3c;--blue-800:#142a50;--blue-700:#1a3666;--blue-600:#1d4ed8;
+  --blue-500:#2563eb;--blue-400:#3b82f6;--blue-300:#93c5fd;--blue-200:#bfdbfe;
+  --blue-100:#dbeafe;--blue-50:#eff6ff;
+  --n900:#0f172a;--n800:#1e293b;--n700:#334155;--n600:#475569;--n500:#64748b;
+  --n400:#94a3b8;--n300:#cbd5e1;--n200:#e2e8f0;--n100:#f1f5f9;--n50:#f8fafc;
+  --white:#ffffff;--success:#16a34a;--success-light:#dcfce7;
+  /* Semantic design tokens */
+  --accent:#2563eb;--accent-hover:#1d4ed8;--accent-light:#eff6ff;--accent-border:#bfdbfe;
+  --bg:#f8fafc;--surface:#ffffff;--border:#e2e8f0;--border-strong:#cbd5e1;
+  --text-primary:#0f172a;--text-secondary:#475569;--text-muted:#94a3b8;
+  --sidebar-bg:#0c0c0f
+}
+body{font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--text-primary);background:var(--bg);height:100vh;overflow:hidden}
+.app{display:flex;height:100vh}
+
+/* Sidebar */
+.sidebar{width:220px;min-width:220px;background:var(--sidebar-bg);display:flex;flex-direction:column;height:100vh;border-right:1px solid rgba(255,255,255,.04)}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+.logo-icon{width:30px;height:30px;background:#1e1e26;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(255,255,255,.08)}
+.logo-text{color:#ffffff;font-size:14px;font-weight:600;letter-spacing:-.3px}
+.sidebar-nav{flex:1;overflow-y:auto;padding:8px 0}
+.nav-section{margin-bottom:4px}
+.nav-label{font-size:10px;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.2);text-transform:uppercase;padding:10px 16px 4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;cursor:pointer;color:rgba(255,255,255,.45);font-size:13px;font-weight:400;border-radius:7px;margin:1px 8px;transition:background .12s,color .12s;user-select:none}
+.nav-item:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.8)}
+.nav-item.active{background:rgba(255,255,255,.08);color:#ffffff;box-shadow:inset 2px 0 0 var(--accent)}
+.nav-item.ghost{opacity:.3;cursor:default;pointer-events:none}
+.nav-icon{width:15px;height:15px;opacity:.7;flex-shrink:0}
+.sidebar-credits{padding:14px 16px;border-top:1px solid rgba(255,255,255,.06)}
+.credits-label{font-size:10px;color:rgba(255,255,255,.22);font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-bottom:7px}
+.credits-bar-bg{height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin-bottom:6px}
+.credits-bar-fill{height:100%;background:var(--accent);border-radius:99px;transition:width 1s ease}
+.credits-count{font-size:11px;color:rgba(255,255,255,.3);font-weight:500}
+
+/* Header */
+.header{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;flex-shrink:0}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted)}
+.breadcrumb span{color:var(--text-secondary);font-weight:500}
+.breadcrumb .bc-sep{color:var(--border-strong)}
+.header-right{display:flex;align-items:center;gap:12px}
+.org-name{font-size:13px;font-weight:500;color:var(--text-secondary)}
+.vdivider{width:1px;height:20px;background:var(--border)}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.content{flex:1;overflow-y:auto;padding:28px 32px}
+
+/* Screen transitions */
+.screen-enter{animation:screenIn 220ms ease forwards}
+@keyframes screenIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;font-family:inherit;font-weight:500;cursor:pointer;border:none;transition:background .12s,border-color .12s,color .12s;white-space:nowrap;letter-spacing:-.01em}
+.btn-p{background:var(--accent);color:#ffffff;padding:8px 16px;font-size:13px}
+.btn-p:hover{background:var(--accent-hover)}
+.btn-p.lg{padding:10px 20px;font-size:14px}
+.btn-s{background:var(--surface);color:var(--text-secondary);padding:8px 14px;font-size:13px;border:1px solid var(--border)}
+.btn-s:hover{background:var(--bg);border-color:var(--border-strong)}
+.btn-o{background:transparent;color:var(--text-secondary);border:1px solid var(--border);padding:6px 11px;font-size:12px}
+.btn-o:hover{border-color:var(--accent-border);color:var(--accent);background:var(--accent-light)}
+.btn-warn{background:#f59e0b;color:#ffffff;padding:8px 16px;font-size:13px}
+.btn-warn:hover{background:#d97706}
+.btn-warn.lg{padding:10px 20px;font-size:14px}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;border-radius:20px;padding:3px 8px;font-size:11px;font-weight:500}
+.badge-blue{background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-border)}
+.badge-green{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.badge-orange{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
+.badge-gray{background:var(--n100);color:var(--n500);border:1px solid var(--border)}
+.badge-red{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-header-left{display:flex;align-items:center;gap:8px}
+.card-title{font-size:14px;font-weight:600;color:var(--text-primary)}
+.card-body{padding:18px 20px}
+
+/* Stat cards */
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.stat-label{font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:6px;text-transform:none;letter-spacing:0}
+.stat-value{font-size:28px;font-weight:700;letter-spacing:-.03em;color:var(--text-primary);margin-bottom:3px}
+.stat-delta{font-size:11px;font-weight:500;color:var(--success)}
+
+/* Grid layouts */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px}
+
+/* Form fields */
+.field-group{margin-bottom:14px}
+.field-label{font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:5px;text-transform:none;letter-spacing:0}
+.field-value{min-height:34px;border-radius:8px;padding:8px 11px;font-size:13px;font-family:inherit;transition:all .15s ease;border:1px solid var(--border)}
+.field-empty{background:var(--bg);border-color:var(--border);color:var(--text-muted)}
+.field-filled{background:var(--accent-light);border-color:var(--accent-border);color:var(--text-primary)}
+.field-input{background:var(--surface);border-color:var(--border);color:var(--text-primary);outline:none;width:100%}
+.field-input:focus{border-color:var(--accent);background:var(--accent-light);box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+
+/* Chat */
+.chat-area{display:flex;flex-direction:column;gap:14px;overflow-y:auto;max-height:340px;padding-right:4px}
+.chat-row{display:flex;align-items:flex-end;gap:8px}
+.chat-row.user{flex-direction:row-reverse}
+.chat-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0}
+.av-ai{background:#0c0c0f;color:#ffffff}
+.av-user{background:var(--border);color:var(--text-secondary)}
+.chat-bubble{max-width:82%;padding:10px 13px;border-radius:16px;font-size:13px;line-height:1.5}
+.bubble-ai{background:var(--bg);color:var(--text-primary);border:1px solid var(--border);border-bottom-left-radius:4px}
+.bubble-user{background:var(--accent);color:#ffffff;border-bottom-right-radius:4px}
+.bubble-ghost{background:rgba(37,99,235,.18);color:#ffffff;border:1px dashed rgba(37,99,235,.45);border-bottom-right-radius:4px;cursor:pointer;position:relative}
+.bubble-ghost:hover{background:rgba(37,99,235,.28)}
+.ghost-hint{font-size:10px;opacity:.7;margin-top:3px}
+
+/* Typing dots */
+.typing-dots{display:flex;gap:4px;align-items:center;padding:4px 0}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text-muted)}
+.dot:nth-child(1){animation:pulse 1s infinite 0s}
+.dot:nth-child(2){animation:pulse 1s infinite .2s}
+.dot:nth-child(3){animation:pulse 1s infinite .4s}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+
+/* Loading steps */
+.step-row{display:flex;align-items:center;gap:12px;padding:12px 0}
+.step-row+.step-row{border-top:1px solid var(--bg)}
+.step-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .3s}
+.step-dot.pending{background:var(--border-strong)}
+.step-dot.active{background:var(--accent);animation:pulse 1s ease-in-out infinite}
+.step-dot.done{background:var(--success)}
+.step-text{font-size:13px;display:flex;align-items:center;gap:6px}
+.step-text.pending{color:var(--text-muted)}
+.step-text.active{color:var(--text-primary);font-weight:500}
+.step-text.done{color:var(--text-secondary)}
+
+/* Phone frame (legacy) */
+.phone-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
+.phone{width:155px;border-radius:22px;background:#111;border:1.5px solid #333;box-shadow:0 8px 32px rgba(0,0,0,.3);overflow:hidden;position:relative}
+.phone-notch{background:#111;text-align:center;padding:6px 0 4px;display:flex;justify-content:center}
+.phone-notch-dot{width:8px;height:8px;background:#222;border-radius:50%}
+.phone-video{height:200px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;position:relative}
+.phone-actions{position:absolute;right:8px;bottom:12px;display:flex;flex-direction:column;gap:10px}
+.phone-action-btn{width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:12px}
+.phone-action-label{font-size:8px;color:rgba(255,255,255,.6);text-align:center;margin-top:1px}
+.phone-bottom{background:#000;padding:8px 10px 10px}
+.phone-username{color:#ffffff;font-size:10px;font-weight:700;margin-bottom:3px}
+.phone-caption{color:rgba(255,255,255,.85);font-size:9px;line-height:1.4;margin-bottom:3px}
+.phone-hashtags{color:#4cc9f0;font-size:9px}
+
+/* Bar chart */
+.bar-chart{display:flex;align-items:flex-end;gap:4px;height:60px}
+.bar{border-radius:3px 3px 0 0;flex:1;min-width:0}
+
+/* Post breakdown */
+.post-row{display:flex;align-items:center;padding:10px 12px;border-radius:8px;gap:12px;font-size:13px}
+.post-row.highlight{background:var(--accent-light);border:1px solid var(--accent-border)}
+.post-row:not(.highlight){border:1px solid transparent}
+.post-name{flex:1;font-weight:500;color:var(--text-primary)}
+.post-stat{color:var(--text-muted);min-width:50px;text-align:right}
+
+/* Upload drop zone */
+.dropzone{border:1.5px dashed var(--border-strong);border-radius:12px;padding:36px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--text-muted);text-align:center;transition:border-color .15s;background:var(--bg)}
+.dropzone-icon{width:40px;height:40px;background:var(--accent-light);border-radius:10px;display:flex;align-items:center;justify-content:center}
+
+/* Misc */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
+.page-title{font-size:20px;font-weight:600;color:var(--text-primary);margin-bottom:4px;letter-spacing:-.02em}
+.page-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
+.bottom-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-top:20px}
+.bottom-bar-left{font-size:13px;color:var(--text-secondary)}
+.section-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-heading{font-size:15px;font-weight:600;color:var(--text-primary);letter-spacing:-.01em}
+.color-swatch{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.8);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.detected-panel{background:var(--accent-light);border:1px solid var(--accent-border);border-radius:10px;padding:14px 16px;margin-top:14px}
+.swatches-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+
+/* AI rec panel */
+.ai-rec{background:#fafbff;border:1px solid var(--accent-border);border-radius:12px;padding:20px;margin-top:20px}
+.ai-rec-label{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+
+/* Engagement section */
+.chart-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--text-muted)}
+.chart-mid{text-align:center;color:var(--accent);font-weight:500}
+
+/* Approved brief banner */
+.brief-banner{background:var(--success);color:#ffffff;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:500;margin-bottom:16px}
+
+/* Image placeholder tiles */
+.img-tile{background:var(--n100);border:1.5px dashed var(--border-strong);border-radius:8px;height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--text-muted);font-size:11px}
+.img-tile-label{font-size:12px;font-weight:500;color:var(--text-secondary)}
+
+/* Campaign list */
+.campaign-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:20px;cursor:pointer;transition:border-color .15s;margin-bottom:10px}
+.campaign-item:hover{border-color:var(--accent-border)}
+.campaign-item-info{flex:1;min-width:0}
+.campaign-name-row{font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px;display:flex;align-items:center;gap:8px;letter-spacing:-.01em}
+.campaign-meta{font-size:12px;color:var(--text-muted)}
+.campaign-thumbs{display:flex;gap:3px}
+.campaign-thumb{width:56px;height:56px;border-radius:8px;flex-shrink:0;object-fit:cover;display:block}
+
+/* Version badges */
+.version-track{display:flex;align-items:center;gap:4px;margin-top:6px}
+.vbadge{display:inline-flex;align-items:center;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600;background:var(--n100);color:var(--n500)}
+.vbadge.current{background:var(--accent);color:#ffffff}
+.vbadge.done{background:var(--accent-light);color:var(--accent)}
+.v-arrow{font-size:9px;color:var(--border-strong)}
+
+/* Mini sparkline */
+.mini-sparkline{display:flex;align-items:flex-end;gap:2px;height:22px;margin-top:6px}
+.spark-bar{width:9px;border-radius:2px 2px 0 0;background:var(--accent-border)}
+.spark-bar.peak{background:var(--accent)}
+
+/* Brand identity zones */
+.identity-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
+.identity-zone{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.identity-zone-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.identity-zone-title{font-size:13px;font-weight:600;color:var(--text-primary)}
+.identity-zone-body{padding:14px 16px}
+
+/* Prompt collapse section */
+.prompt-section{background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden}
+.prompt-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none;font-size:12px;color:var(--text-secondary);font-weight:500}
+.prompt-toggle:hover{background:var(--n100)}
+.prompt-body{padding:12px 14px;border-top:1px solid var(--border)}
+.prompt-code{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:11px;line-height:1.7;color:var(--text-secondary);white-space:pre-wrap}
+
+/* Final version */
+.fv-posts{display:flex;gap:8px;margin-bottom:6px}
+.fv-post{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.fv-thumb{width:100%;height:160px;border-radius:10px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;position:relative;overflow:hidden}
+.fv-thumb.best{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+.fv-post-label{font-size:11px;color:var(--text-muted);font-weight:500}
+
+/* BytePlus panel */
+.byteplus-panel{background:#fffdf5;border:1px solid #fcd34d;border-radius:12px;padding:20px;margin-top:20px}
+.byteplus-label{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#92400e;margin-bottom:8px}
+.byteplus-verdict{font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.5}
+.suggestion-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.suggestion-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text-secondary);line-height:1.5}
+.suggestion-dot{width:6px;height:6px;border-radius:50%;background:#f59e0b;flex-shrink:0;margin-top:5px}
+.regen-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.regen-input{flex:1;min-width:180px;padding:8px 11px;border-radius:8px;border:1px solid #fcd34d;font-size:13px;font-family:inherit;background:var(--surface);outline:none}
+.regen-input:focus{border-color:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.1)}
+
+/* Strong panel */
+.strong-panel{background:#f7fef9;border:1px solid #86efac;border-radius:12px;padding:20px;margin-top:20px}
+.strong-label{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#15803d;margin-bottom:8px}
+
+/* Checkbox row */
+.checkbox-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--accent-light);border:1px solid var(--accent-border);border-radius:8px;cursor:pointer;user-select:none;margin-top:12px}
+.checkbox-row input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const h = React.createElement;
+const {useState, useEffect, useRef} = React;
+
+// SVG icons
+const WindIcon = () => h('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'none',stroke:'#93c5fd',strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},
+  h('path',{d:'M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2'}));
+
+const CheckIcon = () => h('svg',{width:12,height:12,viewBox:'0 0 24 24',fill:'none',stroke:'#16a34a',strokeWidth:3,strokeLinecap:'round',strokeLinejoin:'round'},
+  h('polyline',{points:'20 6 9 17 4 12'}));
+
+const SparkleIcon = () => h('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'currentColor'},
+  h('path',{d:'M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z'}));
+
+const UploadIcon = () => h('svg',{width:22,height:22,viewBox:'0 0 24 24',fill:'none',stroke:'#93c5fd',strokeWidth:1.5,strokeLinecap:'round',strokeLinejoin:'round'},
+  h('polyline',{points:'16 16 12 12 8 16'}),h('line',{x1:12,y1:12,x2:12,y2:21}),
+  h('path',{d:'M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3'}));
+
+const CalIcon = () => h('svg',{width:28,height:28,viewBox:'0 0 24 24',fill:'none',stroke:'#3b82f6',strokeWidth:1.5,strokeLinecap:'round',strokeLinejoin:'round'},
+  h('rect',{x:3,y:4,width:18,height:18,rx:2,ry:2}),h('line',{x1:16,y1:2,x2:16,y2:6}),
+  h('line',{x1:8,y1:2,x2:8,y2:6}),h('line',{x1:3,y1:10,x2:21,y2:10}));
+
+// ── Sidebar ─────────────────────────────────────────────────────────────────
+function Sidebar({screen, onNav, credits}) {
+  const pct = credits;
+  const raw = Math.round(credits * 8.4);
+
+  const activeMap = {
+    dashboard:'dashboard',
+    brandIdentity:'brandIdentity',
+    upload:'dashboard',
+    briefing:'dashboard',
+    loading:'dashboard',
+    nodes:'dashboard',
+    finalVersion:'dashboard',
+  };
+
+  const isActive = (id) => activeMap[screen] === id;
+
+  return h('div',{className:'sidebar'},
+    h('div',{className:'sidebar-logo'},
+      h('div',{className:'logo-icon'}, h(WindIcon)),
+      h('span',{className:'logo-text'},'basicrouter')
+    ),
+    h('div',{className:'sidebar-nav'},
+      h('div',{className:'nav-section'},
+        h('div',{className:'nav-label'},'WORKSPACE'),
+        h('div',{
+          className:`nav-item${isActive('dashboard')?' active':''}`,
+          onClick:()=>onNav('dashboard')
+        },
+          h('span',{style:{fontSize:12,opacity:.6}},'□'),
+          h('span',null,'Projects')
+        ),
+        h('div',{
+          className:`nav-item${isActive('brandIdentity')?' active':''}`,
+          onClick:()=>onNav('brandIdentity')
+        },
+          h('span',{style:{fontSize:12,opacity:.6}},'◈'),
+          h('span',null,'Brand Identity')
+        )
+      ),
+      h('div',{className:'nav-section'},
+        h('div',{className:'nav-label'},'GENERATE'),
+        h('div',{className:'nav-item ghost'},
+          h('span',{style:{fontSize:12,opacity:.6}},'⊡'),h('span',null,'Image generation')
+        ),
+        h('div',{className:'nav-item ghost'},
+          h('span',{style:{fontSize:12,opacity:.6}},'▷'),h('span',null,'Video generation')
+        )
+      ),
+      h('div',{className:'nav-section'},
+        h('div',{className:'nav-label'},'DEVELOPERS'),
+        h('div',{className:'nav-item ghost'},
+          h('span',{style:{fontSize:12,opacity:.6}},'⌥'),h('span',null,'API')
+        ),
+        h('div',{className:'nav-item ghost'},
+          h('span',{style:{fontSize:12,opacity:.6}},'≡'),h('span',null,'Docs')
+        )
+      ),
+      h('div',{className:'nav-section'},
+        h('div',{className:'nav-label'},'OTHER'),
+        h('div',{className:'nav-item ghost'},
+          h('span',{style:{fontSize:12,opacity:.6}},'◻'),h('span',null,'Packages')
+        ),
+        h('div',{className:'nav-item ghost'},
+          h('span',{style:{fontSize:12,opacity:.6}},'⚙'),h('span',null,'Settings')
+        )
+      )
+    ),
+    h('div',{className:'sidebar-credits'},
+      h('div',{className:'credits-label'},'Credits remaining'),
+      h('div',{className:'credits-bar-bg'},
+        h('div',{className:'credits-bar-fill',style:{width:`${pct}%`}})
+      ),
+      h('div',{className:'credits-count'}, `${raw} / 840 credits`)
+    )
+  );
+}
+
+// ── Header ───────────────────────────────────────────────────────────────────
+function Header({screen, finalCampaign}) {
+  const crumbMap = {
+    dashboard: ['Projects'],
+    brandIdentity: ['Brand Identity'],
+    upload: ['Projects', 'New campaign'],
+    briefing: ['Projects', 'Summer Glow — Q3', 'Brief'],
+    loading: ['Projects', 'Summer Glow — Q3', 'Generating'],
+    nodes: ['Projects', 'Summer Glow — Q3', 'Campaign'],
+    finalVersion: finalCampaign === 'winterradiance'
+      ? ['Projects', 'Winter Radiance — Q4', 'Final Version']
+      : ['Projects', 'Summer Glow — Q3', 'Final Version'],
+  };
+  const crumbs = crumbMap[screen] || ['Projects'];
+  return h('div',{className:'header'},
+    h('div',{className:'breadcrumb'},
+      crumbs.map((c,i) => h(React.Fragment,{key:i},
+        i > 0 && h('span',{className:'bc-sep'},' / '),
+        h('span',null, c)
+      ))
+    ),
+    h('div',{className:'header-right'},
+      h('span',{className:'org-name'},'Lumeo Skincare'),
+      h('div',{className:'vdivider'}),
+      h('div',{className:'avatar'},'LS')
+    )
+  );
+}
+
+// ── Screen 1 — Projects Dashboard ────────────────────────────────────────────
+function S1({onNav}) {
+  const thumbUrls = [
+    ['assets/sg-thumb-1.png','assets/sg-thumb-2.png','assets/sg-thumb-3.png'],
+    ['assets/ar-thumb-1.png','assets/ar-thumb-2.png','assets/ar-thumb-3.png'],
+    ['assets/wr-thumb-1.png','assets/wr-thumb-2.png','assets/wr-thumb-3.png'],
+  ];
+
+  const sparkVals = [18, 27, 35, 44, 58];
+
+  const campaigns = [
+    {
+      id: 'summerglow',
+      name: 'Summer Glow — TikTok Q3',
+      meta: 'Started Jun 3 · TikTok · Lead capture',
+      status: 'Active',
+      statusClass: 'badge-blue',
+      versions: ['v1','v2','v3'],
+      currentV: 2,
+      colors: thumbUrls[0],
+      onClick: () => onNav('finalVersion', {campaign:'summerglow'}),
+    },
+    {
+      id: 'autumn',
+      name: 'Autumn Refresh — Instagram Q3',
+      meta: 'Created Jun 8 · Instagram · Awareness',
+      status: 'Draft',
+      statusClass: 'badge-gray',
+      versions: [],
+      currentV: -1,
+      colors: thumbUrls[1],
+      onClick: () => onNav('upload'),
+    },
+    {
+      id: 'winterradiance',
+      name: 'Winter Radiance — TikTok Q4',
+      meta: 'Started Apr 12 · TikTok · Brand awareness',
+      status: 'Completed',
+      statusClass: 'badge-green',
+      versions: ['v1','v2','v3','v4','v5'],
+      currentV: 4,
+      colors: thumbUrls[2],
+      spark: sparkVals,
+      onClick: () => onNav('finalVersion', {campaign:'winterradiance'}),
+    },
+  ];
+
+  return h('div',{className:'content screen-enter'},
+    h('div',{className:'page-header'},
+      h('div',null,
+        h('h1',{className:'page-title'},'Projects'),
+        h('p',{className:'page-sub'},'3 campaigns · 1 active')
+      ),
+      h('button',{className:'btn btn-p lg', onClick:()=>onNav('upload')},'+ Create new campaign')
+    ),
+    h('div',null,
+      campaigns.map(c =>
+        h('div',{key:c.id, className:'campaign-item', onClick:c.onClick},
+          // Thumbnail strip
+          h('div',{className:'campaign-thumbs'},
+            c.colors.map((src,i) =>
+              h('img',{key:i,className:'campaign-thumb',src,alt:''})
+            )
+          ),
+          // Info
+          h('div',{className:'campaign-item-info'},
+            h('div',{className:'campaign-name-row'},
+              h('span',null,c.name),
+              h('span',{className:`badge ${c.statusClass}`},c.status)
+            ),
+            h('div',{className:'campaign-meta'},c.meta),
+            c.versions.length > 0 && h('div',{className:'version-track'},
+              c.versions.map((v,i) =>
+                h(React.Fragment,{key:v},
+                  i > 0 && h('span',{className:'v-arrow'},'›'),
+                  h('span',{className:`vbadge ${i===c.currentV?'current':'done'}`},v)
+                )
+              )
+            ),
+            c.spark && h('div',{style:{display:'flex',alignItems:'center',gap:8,marginTop:6}},
+              h('div',{className:'mini-sparkline'},
+                c.spark.map((v,i) =>
+                  h('div',{key:i, className:`spark-bar ${i===c.spark.length-1?'peak':''}`,
+                    style:{height:`${Math.round((v/58)*22)}px`}
+                  })
+                )
+              ),
+              h('span',{style:{fontSize:11,color:'var(--success)',fontWeight:600}},'Engagement trend ↑')
+            )
+          ),
+          // Right arrow
+          h('span',{style:{fontSize:18,color:'var(--n300)',flexShrink:0}},'›')
+        )
+      )
+    )
+  );
+}
+
+// ── Screen 2 — Create New Campaign ───────────────────────────────────────────
+function S2({onNav, onCredits}) {
+  const [campaignName, setCampaignName] = useState('Summer Glow — Q3');
+  const [applyIdentity, setApplyIdentity] = useState(true);
+  const [uploaded, setUploaded] = useState(false);
+  const [credited, setCredited] = useState(false);
+
+  const handleUpload = () => {
+    setUploaded(true);
+    if(!credited){ onCredits(-4); setCredited(true); }
+  };
+
+  return h('div',{className:'content screen-enter'},
+    h('div',{className:'page-header'},
+      h('div',null,
+        h('h1',{className:'page-title'},'New campaign'),
+        h('p',{className:'page-sub'},'Name your campaign and upload reference materials.')
+      )
+    ),
+    h('div',{className:'grid-2'},
+      // Left: campaign setup
+      h('div',{className:'card'},
+        h('div',{className:'card-header'},
+          h('span',{className:'card-title'},'Campaign setup')
+        ),
+        h('div',{className:'card-body'},
+          h('div',{className:'field-group'},
+            h('div',{className:'field-label'},'Campaign name'),
+            h('input',{
+              className:'field-value field-input',
+              type:'text',
+              value:campaignName,
+              onChange:e=>setCampaignName(e.target.value),
+              placeholder:'e.g. Summer Glow — Q3'
+            })
+          ),
+          h('div',{style:{marginTop:6}},
+            h('div',{className:'field-label'},'Brand identity'),
+            h('label',{className:'checkbox-row'},
+              h('input',{
+                type:'checkbox',
+                checked:applyIdentity,
+                onChange:e=>setApplyIdentity(e.target.checked)
+              }),
+              h('div',null,
+                h('div',{style:{fontSize:13,fontWeight:500,color:'var(--blue-700)'}},
+                  applyIdentity ? 'Lumeo Brand Kit applied ✓' : 'Apply brand identity'
+                ),
+                h('div',{style:{fontSize:11,color:'var(--blue-400)',marginTop:1}},
+                  applyIdentity
+                    ? 'Logo, colors, and brand guidelines will be used'
+                    : 'Check to include your brand identity in this campaign'
+                )
+              )
+            )
+          )
+        )
+      ),
+      // Right: reference materials
+      h('div',{className:'card'},
+        h('div',{className:'card-header'},
+          h('div',{className:'card-header-left'},
+            h('span',{className:'card-title'},'Reference materials'),
+            uploaded && h('span',{className:'badge badge-green'},'Uploaded ✓')
+          )
+        ),
+        h('div',{className:'card-body'},
+          !uploaded
+            ? h('div',null,
+                h('div',{className:'dropzone'},
+                  h('div',{className:'dropzone-icon'}, h(UploadIcon)),
+                  h('div',{style:{fontWeight:500,color:'var(--n600)'}},'Drop reference images or videos'),
+                  h('div',{style:{fontSize:12,color:'var(--n400)'}},'Product shots, lifestyle images, mood boards')
+                ),
+                h('div',{style:{marginTop:12,textAlign:'center'}},
+                  h('button',{className:'btn btn-p', onClick:handleUpload},'Upload materials')
+                )
+              )
+            : h('div',{className:'grid-3'},
+                [
+                  {lbl:'Reference 1', url:'assets/ref-1.png'},
+                  {lbl:'Reference 2', url:'assets/ref-2.png'},
+                  {lbl:'Reference 3', url:'assets/ref-3.png'},
+                ].map(({lbl,url}) =>
+                  h('div',{key:lbl, style:{borderRadius:8,overflow:'hidden',position:'relative'}},
+                    h('img',{src:url, alt:lbl, style:{width:'100%',height:140,objectFit:'cover',display:'block'}}),
+                    h('div',{style:{position:'absolute',bottom:0,left:0,right:0,background:'rgba(0,0,0,.45)',color:'#fff',fontSize:10,padding:'3px 7px',fontWeight:500}},lbl)
+                  )
+                )
+              )
+        )
+      )
+    ),
+    uploaded && h('div',{className:'bottom-bar'},
+      h('span',{className:'bottom-bar-left'},'Materials ready. Continue to set up your brief.'),
+      h('button',{className:'btn btn-p lg', onClick:()=>onNav('briefing')},'Continue to brief →')
+    )
+  );
+}
+
+// ── Brand Identity Screen ─────────────────────────────────────────────────────
+function BrandIdentityScreen() {
+  const swatches = ['#E8C4B8','#F5EAD7','#B8D4C8','#8BA5A0','#2D4A47'];
+
+  return h('div',{className:'content screen-enter'},
+    h('div',{className:'page-header'},
+      h('div',null,
+        h('h1',{className:'page-title'},'Brand Identity'),
+        h('p',{className:'page-sub'},'Global brand assets applied to all campaigns by default.')
+      ),
+      h('button',{className:'btn btn-s'},'+ Add assets')
+    ),
+    h('div',{className:'identity-grid'},
+      // Logo
+      h('div',{className:'identity-zone'},
+        h('div',{className:'identity-zone-header'},
+          h('span',{className:'card-title'},'Logo'),
+          h('span',{className:'badge badge-green'},'2 files')
+        ),
+        h('div',{className:'identity-zone-body'},
+          h('div',{style:{display:'flex',gap:10,marginBottom:10}},
+            h('div',{style:{flex:1,borderRadius:8,overflow:'hidden',position:'relative'}},
+              h('img',{src:'assets/logo-primary.png', alt:'Primary Logo', style:{width:'100%',height:110,objectFit:'contain',padding:'12px',display:'block'}}),
+              h('div',{style:{position:'absolute',bottom:0,left:0,right:0,background:'rgba(0,0,0,.4)',color:'#fff',fontSize:9,padding:'2px 7px',fontWeight:500}},'Primary')
+            ),
+            h('div',{style:{flex:1,borderRadius:8,overflow:'hidden',position:'relative'}},
+              h('img',{src:'assets/logo-secondary.png', alt:'Secondary Logo', style:{width:'100%',height:110,objectFit:'contain',padding:'12px',display:'block'}}),
+              h('div',{style:{position:'absolute',bottom:0,left:0,right:0,background:'rgba(0,0,0,.4)',color:'#fff',fontSize:9,padding:'2px 7px',fontWeight:500}},'Secondary')
+            )
+          ),
+          h('div',{style:{fontSize:11,color:'var(--n400)'}},'PNG · SVG · AI files supported')
+        )
+      ),
+      // CI / Colors
+      h('div',{className:'identity-zone'},
+        h('div',{className:'identity-zone-header'},
+          h('span',{className:'card-title'},'Colors & CI'),
+          h('span',{className:'badge badge-blue'},'Auto-detected')
+        ),
+        h('div',{className:'identity-zone-body'},
+          h('div',{style:{display:'flex',alignItems:'center',gap:6,color:'var(--blue-500)',fontWeight:600,fontSize:13,marginBottom:8}},
+            h(SparkleIcon), '5 brand colors'
+          ),
+          h('div',{className:'swatches-row'},
+            swatches.map(c =>
+              h('div',{key:c,className:'color-swatch',style:{background:c}})
+            )
+          ),
+          h('div',{style:{fontSize:11,color:'var(--n400)',marginTop:8}},'From logo · Updated Jun 3')
+        )
+      ),
+      // Brand materials
+      h('div',{className:'identity-zone'},
+        h('div',{className:'identity-zone-header'},
+          h('span',{className:'card-title'},'Brand Materials'),
+          h('span',{className:'badge badge-gray'},'3 files')
+        ),
+        h('div',{className:'identity-zone-body'},
+          h('div',{style:{display:'flex',flexDirection:'column',gap:6}},
+            ['Mood board','Typography guide','Brand guidelines'].map((lbl,i) =>
+              h('div',{key:i,style:{
+                display:'flex',alignItems:'center',gap:8,padding:'6px 10px',
+                background:'var(--n50)',borderRadius:6,fontSize:12,color:'var(--n600)'
+              }},
+                h('span',{style:{fontSize:14}},'📄'),
+                lbl
+              )
+            )
+          )
+        )
+      )
+    ),
+    h('div',{className:'card'},
+      h('div',{className:'card-header'},
+        h('span',{className:'card-title'},'Applied to campaigns'),
+        h('span',{className:'badge badge-green'},'2 active')
+      ),
+      h('div',{className:'card-body'},
+        h('div',{style:{fontSize:13,color:'var(--n500)',lineHeight:1.7}},
+          'This brand kit is automatically applied when you create a new campaign. ',
+          'You can deselect it per campaign during setup.'
+        )
+      )
+    )
+  );
+}
+
+// ── Screen 3 — Brief ──────────────────────────────────────────────────────────
+const EXCHANGES = [
+  {
+    ai: "I can see Lumeo has a soft, pastel aesthetic — really clean and organic. Are you keeping that same tone for this campaign, or going for something bolder?",
+    user: "Same tone — soft and natural. Our audience responds well to it.",
+    fields: {brandTone:'Soft & organic', visualMood:'Clean, natural, minimal'}
+  },
+  {
+    ai: "Got it. What's the main goal for this campaign — building brand awareness, or direct lead capture?",
+    user: "Lead capture. We want people clicking through to our site.",
+    fields: {campaignObjective:'Lead capture', callToAction:'Link in bio — product page'}
+  },
+  {
+    ai: "Based on lead capture, I'd actually recommend 4 posts per week instead of 2. Higher frequency builds trust faster on TikTok — especially with a new audience. Shall I plan for that?",
+    user: "Yes, let's do 4 per week.",
+    fields: {postingFrequency:'4 posts / week', campaignDuration:'4 weeks · 16 posts total'}
+  },
+];
+
+const FINAL_AI = "Brief is complete. Review it on the left and approve when you're ready.";
+
+function S3({onNav, onCredits}) {
+  const [step, setStep] = useState(0);
+  const [brief, setBrief] = useState({
+    brand:'Lumeo Skincare', platform:'TikTok', targetRegion:'Southeast Asia',
+    campaignObjective:'', brandTone:'', visualMood:'', callToAction:'',
+    postingFrequency:'', campaignDuration:''
+  });
+  const chatEndRef = useRef(null);
+
+  useEffect(()=>{
+    if(chatEndRef.current) chatEndRef.current.scrollIntoView({behavior:'smooth'});
+  },[step]);
+
+  const handleGhostClick = (idx) => {
+    const ex = EXCHANGES[idx];
+    setBrief(prev => ({...prev, ...ex.fields}));
+    onCredits(-8);
+    const nextStep = (idx+1) * 2;
+    setTimeout(()=>{ setStep(nextStep); }, 400);
+  };
+
+  const messages = [];
+  for(let i = 0; i < 3; i++) {
+    const typingStep = i * 2;
+    const ghostStep = i * 2 + 1;
+    if(step >= typingStep) {
+      const isTyping = step === typingStep;
+      messages.push({type:'ai', text:EXCHANGES[i].ai, typing:isTyping, key:`ai${i}`});
+      if(!isTyping) {
+        const replied = step > ghostStep;
+        messages.push({type:'user', text:EXCHANGES[i].user, ghost:!replied, idx:i, key:`user${i}`});
+      }
+    }
+  }
+  if(step === 6) messages.push({type:'ai', text:FINAL_AI, typing:true, key:'ai-final'});
+  if(step === 7) messages.push({type:'ai', text:FINAL_AI, typing:false, key:'ai-final'});
+
+  const allDone = step >= 7;
+
+  const briefFields = [
+    {label:'Brand', key:'brand'},
+    {label:'Platform', key:'platform'},
+    {label:'Target region', key:'targetRegion'},
+    {label:'Campaign objective', key:'campaignObjective'},
+    {label:'Brand tone', key:'brandTone'},
+    {label:'Visual mood', key:'visualMood'},
+    {label:'Call to action', key:'callToAction'},
+    {label:'Posting frequency', key:'postingFrequency'},
+    {label:'Campaign duration', key:'campaignDuration'},
+  ];
+
+  return h('div',{className:'content screen-enter'},
+    h('div',{className:'grid-2'},
+      h('div',{className:'card'},
+        h('div',{className:'card-header'},
+          h('div',{className:'card-header-left'},
+            h('span',{className:'card-title'},'Brief'),
+            allDone && h('span',{className:'badge badge-green'},'Ready to review')
+          )
+        ),
+        h('div',{className:'card-body'},
+          briefFields.map(f => h('div',{className:'field-group', key:f.key},
+            h('div',{className:'field-label'},f.label),
+            h('div',{
+              className:`field-value ${brief[f.key] ? 'field-filled' : 'field-empty'}`
+            }, brief[f.key] || 'Waiting...')
+          ))
+        )
+      ),
+      h('div',{className:'card'},
+        h('div',{className:'card-header'},
+          h('div',{className:'card-header-left'},
+            h('span',{className:'card-title'},'AI assistant'),
+            h('span',{className:'badge badge-blue'},'✦ Active')
+          )
+        ),
+        h('div',{className:'card-body'},
+          h(ChatThread, {messages, onGhostClick:handleGhostClick, onTypingDone:(idx)=>{
+            if(idx < 3) setStep(idx*2+1);
+            else setStep(7);
+          }, chatEndRef})
+        )
+      )
+    ),
+    allDone && h('div',{className:'bottom-bar'},
+      h('div',null,
+        h('div',{style:{fontWeight:600,fontSize:14,color:'var(--n800)',marginBottom:3}},'Brief looks good?'),
+        h('div',{style:{fontSize:12,color:'var(--n400)'}},'Approving will generate your campaign content using the brief above.')
+      ),
+      h('button',{className:'btn btn-p lg', onClick:()=>onNav('loading')},'Approve & generate →')
+    )
+  );
+}
+
+function ChatThread({messages, onGhostClick, onTypingDone, chatEndRef}) {
+  return h('div',{className:'chat-area'},
+    messages.map(msg => {
+      if(msg.type === 'ai') {
+        return h(AiMessage, {key:msg.key, text:msg.text, typing:msg.typing,
+          onDone:()=>{
+            const idx = msg.key === 'ai-final' ? 3 : parseInt(msg.key.replace('ai',''));
+            onTypingDone(idx);
+          }
+        });
+      } else if(msg.ghost) {
+        return h('div',{key:msg.key, className:'chat-row user'},
+          h('div',{className:'chat-bubble bubble-ghost', onClick:()=>onGhostClick(msg.idx)},
+            h('div',null, msg.text),
+            h('div',{className:'ghost-hint'},'· tap to reply')
+          ),
+          h('div',{className:'chat-avatar av-user'},'LS')
+        );
+      } else {
+        return h('div',{key:msg.key, className:'chat-row user'},
+          h('div',{className:'chat-bubble bubble-user'}, msg.text),
+          h('div',{className:'chat-avatar av-user'},'LS')
+        );
+      }
+    }),
+    h('div',{ref:chatEndRef})
+  );
+}
+
+function AiMessage({text, typing, onDone}) {
+  const [done, setDone] = useState(false);
+  useEffect(()=>{
+    if(typing && !done) {
+      const t = setTimeout(()=>{setDone(true); onDone();}, 1600);
+      return ()=>clearTimeout(t);
+    }
+  },[typing]);
+  useEffect(()=>{ if(!typing) setDone(true); },[]);
+  const showTyping = typing && !done;
+  return h('div',{className:'chat-row'},
+    h('div',{className:'chat-avatar av-ai'},'AI'),
+    h('div',{className:'chat-bubble bubble-ai'},
+      showTyping
+        ? h('div',{className:'typing-dots'},h('div',{className:'dot'}),h('div',{className:'dot'}),h('div',{className:'dot'}))
+        : text
+    )
+  );
+}
+
+// ── Screen 4 — Loading ────────────────────────────────────────────────────────
+function S4({onNav}) {
+  const [stepStates, setStepStates] = useState(['active','pending','pending','pending']);
+  const steps = [
+    {label:'Reading brand assets', t:900},
+    {label:'Building content strategy', t:2000},
+    {label:'Generating scripts & hooks', t:3100},
+    {label:'Rendering post previews', t:4200},
+  ];
+  useEffect(()=>{
+    const timers = [];
+    steps.forEach((s,i) => {
+      timers.push(setTimeout(()=>{
+        setStepStates(prev => {
+          const next = [...prev]; next[i] = 'done';
+          if(i+1 < 4) next[i+1] = 'active';
+          return next;
+        });
+      }, s.t));
+    });
+    timers.push(setTimeout(()=>onNav('nodes'), 4700));
+    return ()=>timers.forEach(clearTimeout);
+  },[]);
+
+  return h('div',{className:'content screen-enter',style:{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'60vh'}},
+    h('div',{style:{textAlign:'center',maxWidth:380,width:'100%'}},
+      h('div',{style:{width:60,height:60,background:'var(--blue-50)',borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px'}},
+        h(CalIcon)
+      ),
+      h('h2',{style:{fontSize:20,fontWeight:600,color:'var(--n800)',marginBottom:6}},'Generating your campaign'),
+      h('p',{style:{fontSize:13,color:'var(--n400)',marginBottom:24}},'This usually takes a few seconds.'),
+      h('div',{className:'card'},
+        h('div',{className:'card-body'},
+          steps.map((s,i) => h('div',{className:'step-row', key:s.label},
+            h('div',{className:`step-dot ${stepStates[i]}`}),
+            h('div',{className:`step-text ${stepStates[i]}`},
+              stepStates[i]==='done' && h(CheckIcon),
+              s.label
+            )
+          ))
+        )
+      )
+    )
+  );
+}
+
+// ── Screen 5 — Campaign Generated ────────────────────────────────────────────
+function S5({onNav, onCredits}) {
+  const [credited, setCredited] = useState(false);
+  const [variations, setVariations] = useState([false,false,false]);
+  const [varInputs, setVarInputs] = useState(['','','']);
+  const [promptView, setPromptView] = useState('prompt'); // 'prompt' | 'nodes'
+  const [editingPrompt, setEditingPrompt] = useState(false);
+
+  const defaultPrompt = `System: You are an expert TikTok content strategist for beauty and skincare brands.
+
+Campaign: Summer Glow — Q3
+Brand: Lumeo Skincare · Soft & organic tone
+Objective: Lead capture · CTA: Link in bio — product page
+Visual mood: Clean, natural, minimal
+Schedule: 4 posts / week · 4 weeks · 16 posts total
+
+Generate 3 short-form video scripts with:
+— Hook in first 1–2s (question-based or social proof)
+— Brand-consistent visuals using provided reference materials
+— Clear CTA directing to product page`;
+
+  const [savedPrompt, setSavedPrompt] = useState(defaultPrompt);
+  const [draftPrompt, setDraftPrompt] = useState(defaultPrompt);
+
+  useEffect(()=>{
+    if(!credited){ onCredits(-18); setCredited(true); }
+  },[]);
+
+  const posts = [
+    {caption:"Your morning ritual, elevated ✨ Lumeo's new Glow Serum does the heavy lifting while you sleep.", tags:'#skincare #glowup #selfcare', img:'assets/video-1.png'},
+    {caption:"We asked 500 girls what they wished their moisturizer did. Then we made it. 🌿", tags:'#lumeoskin #cleanbeauty #skintok', img:'assets/video-2.png'},
+    {caption:"Soft skin shouldn't take 12 steps. Here's our 3-step routine for lazy girls 💅", tags:'#minimalskincare #glowskin #tiktokbeauty', img:'assets/video-3.png'},
+  ];
+
+  const toggleVar = (i) => { const v=[...variations]; v[i]=!v[i]; setVariations(v); };
+
+  const tabBtn = (view, label) => h('button',{
+    style:{
+      fontSize:12,padding:'4px 12px',borderRadius:6,cursor:'pointer',fontFamily:'inherit',
+      fontWeight:500,border:'none',transition:'background .12s,color .12s',
+      background: promptView===view ? 'var(--surface)' : 'transparent',
+      color: promptView===view ? 'var(--text-primary)' : 'var(--text-muted)',
+      boxShadow: promptView===view ? '0 1px 3px rgba(0,0,0,.08)' : 'none',
+    },
+    onClick:()=>{ setPromptView(view); setEditingPrompt(false); }
+  }, label);
+
+  const pipeNodes = [
+    {icon:'📋', label:'Brief', sub:'Approved · Q3', bg:'var(--accent-light)', border:'var(--accent-border)', color:'var(--accent)'},
+    {icon:'🎨', label:'Brand Kit', sub:'Lumeo v2.1', bg:'#faf5ff', border:'#d8b4fe', color:'#7c3aed'},
+    {icon:'🧠', label:'Strategy', sub:'TikTok · Lead capture', bg:'var(--bg)', border:'var(--border)', color:'var(--text-primary)'},
+    {icon:'⚡', label:'Post Generator', sub:'3 outputs · GPT-4o', bg:'var(--bg)', border:'var(--border)', color:'var(--text-primary)'},
+  ];
+
+  const nodeRow = [
+    ...pipeNodes.flatMap((n,i) => [
+      h('div',{key:'n'+i, style:{
+        background:n.bg, border:`1px solid ${n.border}`, borderRadius:10,
+        padding:'10px 14px', minWidth:118, flexShrink:0
+      }},
+        h('div',{style:{fontSize:17,marginBottom:5}},n.icon),
+        h('div',{style:{fontSize:12,fontWeight:600,color:n.color,marginBottom:2,whiteSpace:'nowrap'}},n.label),
+        h('div',{style:{fontSize:10,color:'var(--text-muted)',whiteSpace:'nowrap'}},n.sub)
+      ),
+      i < pipeNodes.length - 1 && h('div',{key:'a'+i, style:{
+        display:'flex',alignItems:'center',flexShrink:0,padding:'0 2px',paddingBottom:10
+      }},
+        h('div',{style:{width:20,height:1,background:'var(--border-strong)','@media':{}}},null),
+        h('span',{style:{fontSize:11,color:'var(--text-muted)',marginLeft:-1,paddingBottom:1}},'›')
+      )
+    ]),
+    h('div',{key:'output', style:{display:'flex',alignItems:'center',gap:0}},
+      h('div',{style:{width:20,height:1,background:'var(--border-strong)',flexShrink:0}}),
+      h('div',{style:{display:'flex',flexDirection:'column',gap:5}},
+        ['Post #1','Post #2','Post #3'].map((p,i)=>
+          h('div',{key:i, style:{
+            background:'#f0fdf4',border:'1px solid #bbf7d0',borderRadius:7,
+            padding:'5px 12px',fontSize:11,fontWeight:500,color:'#15803d',
+            display:'flex',alignItems:'center',gap:5,whiteSpace:'nowrap'
+          }},
+            h('span',{style:{fontSize:9,opacity:.8}},'✓'), p
+          )
+        )
+      )
+    )
+  ];
+
+  return h('div',{className:'content screen-enter'},
+    h('div',{className:'page-header'},
+      h('div',null,
+        h('h1',{className:'page-title'},'Campaign generated'),
+        h('p',{className:'page-sub'},'Summer Glow — Q3 · 3 posts generated · Review and finalize')
+      ),
+      h('button',{className:'btn btn-p lg', onClick:()=>onNav('finalVersion',{campaign:'summerglow'})},'Mark as Final Version →')
+    ),
+    h('div',{className:'brief-banner'},'✓ Brief approved — Summer Glow Q3 · Lead capture · 4 posts/week · Soft & organic tone'),
+
+    // Prompt section — open by default, two views
+    h('div',{className:'prompt-section'},
+      h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 14px',borderBottom:'1px solid var(--border)'}},
+        h('div',{style:{display:'flex',alignItems:'center',gap:8}},
+          h('span',{style:{fontSize:13,fontWeight:600,color:'var(--text-primary)'}},'Prompt used'),
+          h('span',{style:{fontSize:11,color:'var(--text-muted)'}},'Brief → Prompt → Result')
+        ),
+        h('div',{style:{display:'flex',gap:2,background:'var(--bg)',padding:'3px',borderRadius:8,border:'1px solid var(--border)'}},
+          tabBtn('prompt','Prompt'),
+          tabBtn('nodes','Node view')
+        )
+      ),
+      h('div',{className:'prompt-body'},
+        promptView === 'prompt'
+          ? h('div',null,
+              editingPrompt
+                ? h('div',null,
+                    h('textarea',{
+                      autoFocus:true,
+                      style:{width:'100%',minHeight:164,fontFamily:"'SF Mono',Monaco,Consolas,monospace",fontSize:11,lineHeight:1.7,color:'var(--text-secondary)',border:'1px solid var(--accent-border)',borderRadius:8,padding:'10px 12px',background:'var(--accent-light)',outline:'none',resize:'vertical',boxSizing:'border-box',display:'block'},
+                      value:draftPrompt,
+                      onChange:e=>setDraftPrompt(e.target.value)
+                    }),
+                    h('div',{style:{display:'flex',gap:8,marginTop:10}},
+                      h('button',{className:'btn btn-p',onClick:()=>{setSavedPrompt(draftPrompt);setEditingPrompt(false);}},'↻ Regenerate'),
+                      h('button',{className:'btn btn-s',onClick:()=>{setDraftPrompt(savedPrompt);setEditingPrompt(false);}},'Cancel')
+                    )
+                  )
+                : h('div',null,
+                    h('div',{className:'prompt-code'},savedPrompt),
+                    h('button',{className:'btn btn-o',style:{marginTop:10},onClick:()=>setEditingPrompt(true)},'✎  Edit prompt')
+                  )
+            )
+          : h('div',{style:{overflowX:'auto',paddingBottom:4}},
+              h('div',{style:{display:'flex',alignItems:'center',gap:0,minWidth:560}}, nodeRow)
+            )
+      )
+    ),
+
+    h('div',{className:'card'},
+      h('div',{className:'card-header'},
+        h('div',{className:'card-header-left'},
+          h('span',{className:'card-title'},'Generated content'),
+          h('span',{className:'badge badge-blue'},'3 posts · Week 1')
+        )
+      ),
+      h('div',{className:'card-body'},
+        h('div',{style:{display:'flex',justifyContent:'center',gap:24,flexWrap:'wrap'}},
+          posts.map((p,i) =>
+            h('div',{key:i, style:{display:'flex',flexDirection:'column',alignItems:'center',gap:10}},
+              h('img',{
+                src:p.img, alt:`Post ${i+1}`,
+                style:{width:270,borderRadius:18,display:'block',boxShadow:'0 12px 36px rgba(0,0,0,.2)'}
+              }),
+              variations[i]
+                ? h('div',{style:{display:'flex',gap:4}},
+                    h('input',{
+                      autoFocus:true,
+                      style:{fontSize:11,padding:'4px 8px',borderRadius:5,border:'1px solid var(--n200)',width:140,outline:'none'},
+                      placeholder:'e.g. Make it funnier...',
+                      value:varInputs[i],
+                      onChange:e=>{const v=[...varInputs];v[i]=e.target.value;setVarInputs(v);},
+                      onKeyDown:e=>{if(e.key==='Enter') toggleVar(i);}
+                    }),
+                    h('button',{className:'btn btn-s',style:{fontSize:10,padding:'4px 8px'},onClick:()=>toggleVar(i)},'✕')
+                  )
+                : h('button',{className:'btn btn-o',onClick:()=>toggleVar(i)},'Request variation')
+            )
+          )
+        )
+      )
+    ),
+    h('div',{className:'bottom-bar'},
+      h('span',{className:'bottom-bar-left'},'Happy with the content? Mark as final to publish and track performance.'),
+      h('button',{className:'btn btn-p lg', onClick:()=>onNav('finalVersion',{campaign:'summerglow'})},'Mark as Final Version →')
+    )
+  );
+}
+
+// ── Final Version Screen ──────────────────────────────────────────────────────
+function FinalVersionScreen({onNav, onCredits, campaignType}) {
+  const isWeak = campaignType !== 'winterradiance';
+  const [regenPrompt, setRegenPrompt] = useState('');
+
+  const campaignName = isWeak ? 'Summer Glow — Q3' : 'Winter Radiance — Q4';
+  const versions = isWeak ? ['v1','v2','v3'] : ['v1','v2','v3','v4','v5'];
+  const currentV = versions.length - 1;
+
+  const stats = isWeak
+    ? [
+        {label:'Total views', val:'84.2K', delta:'+32% vs benchmark'},
+        {label:'Avg. engagement', val:'4.8%', delta:'+1.2% above avg'},
+        {label:'Profile visits', val:'2,341', delta:'+18% wk/wk'},
+        {label:'Link clicks (leads)', val:'314', delta:'3.2% CTR · 14 converted'},
+      ]
+    : [
+        {label:'Total views', val:'142.8K', delta:'+87% vs benchmark'},
+        {label:'Avg. engagement', val:'8.3%', delta:'+4.7% above avg'},
+        {label:'Profile visits', val:'5,842', delta:'+64% wk/wk'},
+        {label:'Link clicks (leads)', val:'892', delta:'6.1% CTR · 47 converted'},
+      ];
+
+  const barVals = isWeak
+    ? [12,18,15,22,19,28,24,35,30,42,38,48,44,52]
+    : [22,34,28,41,38,52,48,67,60,78,72,88,82,96];
+
+  const postRows = isWeak
+    ? [
+        {name:'Post #1', views:'18.4K', eng:'3.1%', clicks:62, best:false},
+        {name:'Post #2 ⭐', views:'34.7K', eng:'7.2%', clicks:141, best:true},
+        {name:'Post #3', views:'14.2K', eng:'2.9%', clicks:58, best:false},
+        {name:'Post #4', views:'16.9K', eng:'3.8%', clicks:53, best:false},
+      ]
+    : [
+        {name:'Post #1', views:'28.2K', eng:'6.4%', clicks:184, best:false},
+        {name:'Post #2', views:'38.1K', eng:'7.8%', clicks:228, best:false},
+        {name:'Post #3 ⭐', views:'51.4K', eng:'9.1%', clicks:312, best:true},
+        {name:'Post #4', views:'25.1K', eng:'5.9%', clicks:168, best:false},
+      ];
+
+  const thumbImgs = isWeak
+    ? ['assets/sg-final-1.png','assets/sg-final-2.png','assets/sg-final-3.png','assets/sg-final-4.png']
+    : ['assets/wr-final-1.png','assets/wr-final-2.png','assets/wr-final-3.png','assets/wr-final-4.png'];
+
+  return h('div',{className:'content screen-enter'},
+    // Header
+    h('div',{className:'page-header'},
+      h('div',null,
+        h('h1',{className:'page-title'},campaignName,' · Final Version'),
+        h('div',{className:'version-track',style:{marginTop:8}},
+          versions.map((v,i) =>
+            h(React.Fragment,{key:v},
+              i > 0 && h('span',{className:'v-arrow'},'›'),
+              h('span',{className:`vbadge ${i===currentV?'current':'done'}`},v)
+            )
+          )
+        )
+      ),
+      isWeak
+        ? h('button',{className:'btn btn-warn lg', onClick:()=>onNav('loading')},'Regenerate →')
+        : h('button',{className:'btn btn-p lg', onClick:()=>onNav('loading')},'Generate Variation →')
+    ),
+
+    // Content section
+    h('div',{className:'card',style:{marginBottom:20}},
+      h('div',{className:'card-header'},
+        h('span',{className:'card-title'},'Content'),
+        h('span',{className:'badge badge-gray'},'4 posts published')
+      ),
+      h('div',{className:'card-body'},
+        h('div',{className:'fv-posts'},
+          thumbImgs.map((src,i) =>
+            h('div',{key:i, className:'fv-post'},
+              h('div',{className:`fv-thumb ${postRows[i].best?'best':''}`},
+                h('img',{src, alt:postRows[i].name, style:{width:'100%',height:'100%',objectFit:'cover',display:'block'}}),
+                postRows[i].best && h('div',{style:{
+                  position:'absolute',top:6,right:6,
+                  background:'var(--blue-500)',color:'var(--white)',
+                  fontSize:9,fontWeight:700,padding:'2px 5px',borderRadius:4
+                }},'BEST')
+              ),
+              h('div',{className:'fv-post-label'},postRows[i].name)
+            )
+          )
+        )
+      )
+    ),
+
+    // Analytics section
+    h('div',{style:{marginBottom:0}},
+      h('div',{className:'grid-4',style:{marginBottom:16}},
+        stats.map(s => h('div',{className:'stat-card', key:s.label},
+          h('div',{className:'stat-label'},s.label),
+          h('div',{className:'stat-value'},s.val),
+          h('div',{className:'stat-delta'},s.delta)
+        ))
+      ),
+      h('div',{className:'grid-2'},
+        h('div',{className:'card'},
+          h('div',{className:'card-header'},
+            h('div',{className:'card-header-left'},
+              h('span',{className:'card-title'},'Engagement over time'),
+              h('span',{className:`badge ${isWeak?'badge-orange':'badge-green'}`},
+                isWeak ? 'Post #2 spike' : 'Post #3 peak'
+              )
+            )
+          ),
+          h('div',{className:'card-body'},
+            h('div',{className:'bar-chart'},
+              barVals.map((v,i) =>
+                h('div',{key:i, className:'bar', style:{
+                  height:`${(v/96)*60}px`,
+                  background: i>=7 ? 'var(--blue-500)' : 'var(--blue-200)'
+                }})
+              )
+            ),
+            h('div',{className:'chart-labels'},
+              h('span',null,'Day 1'),
+              h('span',{className:'chart-mid'},'Best post →'),
+              h('span',null,'Day 14')
+            )
+          )
+        ),
+        h('div',{className:'card'},
+          h('div',{className:'card-header'},
+            h('span',{className:'card-title'},'Post breakdown')
+          ),
+          h('div',{className:'card-body'},
+            h('div',{style:{display:'flex',flexDirection:'column',gap:6}},
+              postRows.map(r =>
+                h('div',{key:r.name, className:`post-row ${r.best?'highlight':''}`},
+                  h('span',{className:'post-name'},r.name),
+                  r.best && h('span',{className:'badge badge-blue',style:{marginRight:4}},'Best'),
+                  h('span',{className:'post-stat'},r.views),
+                  h('span',{className:'post-stat'},r.eng),
+                  h('span',{className:'post-stat',style:{color:'var(--n800)',fontWeight:500}},r.clicks)
+                )
+              )
+            )
+          )
+        )
+      )
+    ),
+
+    // AI analysis panel
+    isWeak
+      ? h('div',{className:'byteplus-panel'},
+          h('div',{className:'byteplus-label'},
+            h('span',{style:{fontSize:14}},'⚡'), 'BytePlus AI Analytics'
+          ),
+          h('div',{className:'byteplus-verdict'},
+            h('strong',null,'Performance is below target KPI.'),
+            ' Your engagement rate of 4.8% is below the 6.5% target for lead-capture campaigns in Southeast Asia. Based on platform analytics, here\'s what to try next:'
+          ),
+          h('div',{className:'suggestion-list'},
+            [
+              'Hook length over 3s reduces skip rate by 31% for skincare content on TikTok SEA',
+              'Publishing between 7–9pm local time increases reach by 23% for this audience segment',
+              'Trending audio #GlowSeason is driving 2.1× more FYP distribution this week — align visuals to it',
+            ].map((s,i) =>
+              h('div',{key:i, className:'suggestion-item'},
+                h('div',{className:'suggestion-dot'}),
+                s
+              )
+            )
+          ),
+          h('div',{className:'regen-row'},
+            h('input',{
+              className:'regen-input',
+              type:'text',
+              placeholder:'Add direction (optional) — e.g. "more humour, less product-first"',
+              value:regenPrompt,
+              onChange:e=>setRegenPrompt(e.target.value)
+            }),
+            h('button',{className:'btn btn-warn lg', onClick:()=>{ onCredits(-3); onNav('loading'); }},
+              '⚡ Approve & Regenerate'
+            )
+          )
+        )
+      : h('div',{className:'strong-panel'},
+          h('div',{className:'strong-label'},
+            h('span',{style:{fontSize:14}},'✓'), 'Strong Performance'
+          ),
+          h('p',{style:{fontSize:13,lineHeight:1.6,color:'var(--n700)',marginBottom:16}},
+            h('strong',null,'"Post #3 drove the strongest conversion at 9.1% CTR"'),
+            ' — social proof + question-based hooks are performing exceptionally well for your audience. ',
+            'I recommend generating a variation with the same format and scheduling at the same time slot.'
+          ),
+          h('button',{className:'btn btn-p lg', onClick:()=>{ onCredits(-3); onNav('loading'); }},
+            'Generate Variation →'
+          )
+        )
+  );
+}
+
+// ── App root ──────────────────────────────────────────────────────────────────
+function App() {
+  const [screen, setScreen] = useState('dashboard');
+  const [credits, setCredits] = useState(100);
+  const [briefingKey, setBriefingKey] = useState(0);
+  const [finalCampaign, setFinalCampaign] = useState('summerglow');
+
+  const handleNav = (s, params) => {
+    if(s === 'briefing') setBriefingKey(k => k+1);
+    if(s === 'finalVersion' && params && params.campaign) setFinalCampaign(params.campaign);
+    setScreen(s);
+  };
+  const handleCredits = (delta) => setCredits(prev => Math.max(0, Math.min(100, prev+delta)));
+
+  const screenMap = {
+    dashboard:     h(S1,           {onNav:handleNav}),
+    brandIdentity: h(BrandIdentityScreen, {onNav:handleNav}),
+    upload:        h(S2,           {onNav:handleNav, onCredits:handleCredits}),
+    briefing:      h(S3,           {key:briefingKey, onNav:handleNav, onCredits:handleCredits}),
+    loading:       h(S4,           {onNav:handleNav}),
+    nodes:         h(S5,           {onNav:handleNav, onCredits:handleCredits}),
+    finalVersion:  h(FinalVersionScreen, {onNav:handleNav, onCredits:handleCredits, campaignType:finalCampaign}),
+  };
+
+  return h('div',{className:'app'},
+    h(Sidebar,{screen, onNav:handleNav, credits}),
+    h('div',{className:'main'},
+      h(Header,{screen, finalCampaign}),
+      screenMap[screen] || screenMap['dashboard']
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>
