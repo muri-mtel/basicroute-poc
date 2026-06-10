@@ -26,6 +26,8 @@
   --blue:#4c85f5;
   --blue-bg:rgba(76,133,245,0.12);
   --blue-border:rgba(76,133,245,0.3);
+  --gold:#f0a500;
+  --gold-bg:rgba(240,165,0,0.12);
 }
 body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg);color:var(--text-primary);height:100vh;overflow:hidden}
 .app{display:flex;flex-direction:column;height:100vh}
@@ -423,6 +425,35 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg
 .reports-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;padding-bottom:60px}
 .reports-empty-icon{width:44px;height:44px;border-radius:10px;background:var(--surface);box-shadow:var(--card-shadow);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
 .reports-empty p{font-family:'Gabarito',sans-serif;font-size:13px;color:var(--text-muted);text-align:center;line-height:1.5;max-width:220px}
+
+/* ── Video Carousel ───────────────────────────────────────────────────────── */
+.vc-section{margin-top:28px}
+.vc-section-hdr{font-family:'Gabarito',sans-serif;font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:14px;letter-spacing:-0.15px}
+.vc-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:14px;scrollbar-width:none;margin:0 -2px;padding:0 2px 14px}
+.vc-scroll::-webkit-scrollbar{display:none}
+.vc-card{background:var(--surface);border-radius:12px;box-shadow:var(--card-shadow);flex-shrink:0;width:206px;overflow:hidden;cursor:pointer;transition:box-shadow .15s;position:relative}
+.vc-card:hover{box-shadow:0 4px 24px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.07)}
+.vc-thumb-wrap{position:relative;aspect-ratio:9/16;background:#0c0c12;overflow:hidden}
+.vc-thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.vc-rank{position:absolute;top:9px;left:9px;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Gabarito',sans-serif;font-size:12px;font-weight:700}
+.vc-rank-1{background:var(--gold);color:#1a0f00}
+.vc-rank-n{background:rgba(20,18,26,.82);backdrop-filter:blur(3px);color:var(--text-primary);border:1px solid rgba(255,255,255,.1)}
+.vc-duration{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.65);border-radius:4px;padding:2px 6px;font-family:'Gabarito',sans-serif;font-size:10px;font-weight:600;color:#fff;letter-spacing:.02em}
+.vc-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.vc-play-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.18);backdrop-filter:blur(4px);border:1.5px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center}
+.vc-menu{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(20,18,26,.7);border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s}
+.vc-card:hover .vc-menu{opacity:1}
+.vc-body{padding:12px 13px 13px}
+.vc-title{font-family:'Gabarito',sans-serif;font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:1px;letter-spacing:-0.15px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vc-campaign-name{font-family:'Gabarito',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vc-invest-lbl{font-family:'Gabarito',sans-serif;font-size:9px;color:var(--text-muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em}
+.vc-invest-val{font-family:'Gabarito',sans-serif;font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:10px;letter-spacing:-0.3px}
+.vc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;padding-top:9px;border-top:1px solid var(--border);margin-bottom:10px}
+.vc-stat-lbl{font-family:'Gabarito',sans-serif;font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.vc-stat-val{font-family:'Gabarito',sans-serif;font-size:12px;font-weight:600;color:var(--text-primary);letter-spacing:-0.1px}
+.vc-stat-val.gold{color:var(--gold)}
+.vc-stat-head{font-family:'Gabarito',sans-serif;font-size:9px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.vc-spark{width:100%;height:28px;overflow:visible}
 </style>
 </head>
 <body>
@@ -612,7 +643,7 @@ function S1({onNav}) {
         )
       ),
       h('div',{className:'campaign-card campaign-card-new',onClick:()=>onNav('upload')},
-        h('p',{style:{fontFamily:"'Gabarito',sans-serif",fontWeight:600,fontSize:15,color:'var(--text-primary)',letterSpacing:'-0.15px',textAlign:'center'}},'Create New Project')
+        h('p',{style:{fontFamily:"'Gabarito',sans-serif",fontWeight:600,fontSize:15,color:'var(--text-primary)',letterSpacing:'-0.15px',textAlign:'center'}},'New campaign')
       )
     )
   );
@@ -747,6 +778,9 @@ function CampaignWizard({onNav, onCredits}) {
   const [chatStep, setChatStep] = useState(0);
   const [brief, setBrief] = useState({});
   const [promptView, setPromptView] = useState('text');
+  const [editingPrompt, setEditingPrompt] = useState(false);
+  const buildPromptText = () => PROMPT_SECTIONS.filter(s=>s.body).map(s=>`## ${s.head}\n${s.body}`).join('\n\n');
+  const [promptText, setPromptText] = useState('');
   const [choiceAnswers, setChoiceAnswers] = useState({});
   const chatEndRef = useRef(null);
   const N = WIZARD_EXCHANGES.length;
@@ -869,23 +903,38 @@ function CampaignWizard({onNav, onCredits}) {
   const promptCard = h('div',{className:`wz-prompt-card${showPrompt?' visible':''}`},
     h('div',{className:'card-d-hdr'},
       h('span',{className:'card-d-title'},'Full prompt'),
-      h('div',{className:'prompt-mode-wrap'},
-        h('button',{className:`prompt-mode-btn${promptView==='text'?' active':''}`,onClick:()=>setPromptView('text')},'Text'),
-        h('button',{className:`prompt-mode-btn${promptView==='nodes'?' active':''}`,onClick:()=>setPromptView('nodes')},'Nodes')
+      h('div',{style:{display:'flex',alignItems:'center',gap:8}},
+        !editingPrompt && h('div',{className:'prompt-mode-wrap'},
+          h('button',{className:`prompt-mode-btn${promptView==='text'?' active':''}`,onClick:()=>setPromptView('text')},'Text'),
+          h('button',{className:`prompt-mode-btn${promptView==='nodes'?' active':''}`,onClick:()=>setPromptView('nodes')},'Nodes')
+        ),
+        promptView==='text' && h('button',{
+          className:'prompt-mode-btn',
+          style:editingPrompt?{color:'var(--blue)',borderColor:'var(--blue)'}:{},
+          onClick:()=>{ if(!editingPrompt){ setPromptText(buildPromptText()); } setEditingPrompt(p=>!p); }
+        }, editingPrompt ? 'Done' : 'Edit')
       )
     ),
     h('div',{className:'wz-prompt-body'},
-      promptView==='text'
-        ? h('div',{className:'prompt-sections'},
-            PROMPT_SECTIONS.map((s,i)=>h('div',{key:i},
-              i>0 && h('hr',{className:'ps-divider',style:{marginBottom:14}}),
-              h('div',{className:'ps-item'},
-                h('div',{className:'ps-head'},s.head),
-                h('div',{className:'ps-body'},s.body||'—')
-              )
-            ))
-          )
-        : h(NodeDiagram,{brief})
+      editingPrompt
+        ? h('textarea',{
+            style:{width:'100%',height:'100%',minHeight:400,background:'transparent',border:'none',outline:'none',
+              color:'var(--text-secondary)',fontSize:13,fontFamily:"'Inter',sans-serif",lineHeight:1.6,
+              padding:'14px 18px',resize:'none',boxSizing:'border-box'},
+            value:promptText,
+            onInput:e=>setPromptText(e.target.value)
+          })
+        : promptView==='text'
+          ? h('div',{className:'prompt-sections'},
+              PROMPT_SECTIONS.map((s,i)=>h('div',{key:i},
+                i>0 && h('hr',{className:'ps-divider',style:{marginBottom:14}}),
+                h('div',{className:'ps-item'},
+                  h('div',{className:'ps-head'},s.head),
+                  h('div',{className:'ps-body'},s.body||'—')
+                )
+              ))
+            )
+          : h(NodeDiagram,{brief})
     )
   );
 
@@ -1148,6 +1197,14 @@ function StoryboardScreen({onNav}) {
     setDragIdx(null); setDragOver(null);
   };
 
+  const handleRemove = (i) => {
+    setFrames(prev => prev.map((arr,pi) => {
+      if(pi !== activePost) return arr;
+      return arr.filter((_,j)=>j!==i);
+    }));
+    if(regenIdx===i) setRegenIdx(null);
+  };
+
   return h('div',{className:'screen-pad screen-enter'},
     h('div',{style:{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:24}},
       h('div',null,
@@ -1178,8 +1235,9 @@ function StoryboardScreen({onNav}) {
           h('div',{className:'sb-frame-img-wrap'},
             h('img',{className:'sb-frame-img', src:frame.img, alt:frame.label, draggable:false}),
             h('div',{className:'sb-frame-actions'},
-              h('button',{className:'sb-frame-btn regen', onMouseDown:e=>e.stopPropagation(), onClick:e=>{ e.stopPropagation(); setRegenIdx(regenIdx===i?null:i); setRegenPrompt(''); }}, '↺ Regen'),
-              h('button',{className:'sb-frame-btn', onMouseDown:e=>e.stopPropagation(), onClick:e=>e.stopPropagation()}, '↓ Save')
+              h('button',{className:'sb-frame-btn regen', onMouseDown:e=>e.stopPropagation(), onClick:e=>{ e.stopPropagation(); setRegenIdx(regenIdx===i?null:i); setRegenPrompt(''); }}, '↺ Reprompt'),
+              h('button',{className:'sb-frame-btn', onMouseDown:e=>e.stopPropagation(), onClick:e=>e.stopPropagation()}, '↓ Save'),
+              h('button',{className:'sb-frame-btn', style:{color:'rgba(255,100,100,0.85)'}, onMouseDown:e=>e.stopPropagation(), onClick:e=>{ e.stopPropagation(); handleRemove(i); }}, '✕')
             )
           ),
           regenIdx===i && h('div',{className:'sb-regen-wrap', onMouseDown:e=>e.stopPropagation()},
@@ -1216,11 +1274,18 @@ const REPORTS_CAMPAIGNS = [
       {label:'Glow check — 30 days in',           date:'Jun 15', views:'22.7K', likes:'1,920', shares:'420',   ctr:'3.6%', bar:71},
       {label:'The serum that actually works?',    date:'Jun 17', views:'19.4K', likes:'1,610', shares:'290',   ctr:'2.3%', bar:61},
     ],
+    videos:[
+      {label:'Morning Glow',       img:'assets/sg-final-1.png',         duration:'00:15', investment:'฿12,000', views:'125K', eng:'6.2%', revenue:'฿280K', spark:[28,42,35,68,52,85,62,95,78,100]},
+      {label:'Honest Skin Diary',  img:'assets/sg-final-2.png',         duration:'00:20', investment:'฿12,000', views:'98K',  eng:'4.3%', revenue:'฿180K', spark:[18,32,55,38,72,46,65,42,80,58]},
+      {label:"What's Inside",      img:'assets/sg-final-3.png',         duration:'00:18', investment:'฿12,000', views:'75K',  eng:'3.1%', revenue:'฿120K', spark:[10,28,22,50,38,60,48,70,55,75]},
+      {label:'2-Week Glow Check',  img:'assets/sg-final-4.png',         duration:'00:12', investment:'฿12,000', views:'62K',  eng:'2.8%', revenue:'฿95K',  spark:[14,24,38,28,52,42,58,48,68,62]},
+      {label:'Night Routine',      img:'assets/video preview 01.png',   duration:'00:16', investment:'฿12,000', views:'45K',  eng:'2.1%', revenue:'฿60K',  spark:[8,18,14,28,22,38,32,44,38,52]},
+    ],
   },
   {
     id:'ar', name:'Autumn Refresh — Instagram Q3', meta:'Instagram · Awareness · Draft',
     status:'Draft', badge:'badge-draft',
-    summary:null, posts:[],
+    summary:null, posts:[], videos:[],
   },
   {
     id:'wr', name:'Winter Radiance — TikTok Q4', meta:'TikTok · Brand awareness · Completed',
@@ -1236,8 +1301,83 @@ const REPORTS_CAMPAIGNS = [
       {label:"Why your moisturiser isn't working",   date:'Apr 24', views:'94.5K', likes:'8,200', shares:'1,920', ctr:'4.9%', bar:84},
       {label:'Final results — 20 posts later',      date:'May 3',  views:'81.2K', likes:'7,010', shares:'1,580', ctr:'4.3%', bar:73},
     ],
+    videos:[
+      {label:'Winter Survival',    img:'assets/wr-final-1.png', duration:'00:22', investment:'฿18,000', views:'248K', eng:'7.4%', revenue:'฿620K', spark:[35,55,45,80,60,95,75,100,88,100]},
+      {label:'5AM Routine',        img:'assets/wr-final-2.png', duration:'00:18', investment:'฿18,000', views:'192K', eng:'5.8%', revenue:'฿440K', spark:[25,45,60,40,82,54,72,50,90,68]},
+      {label:'Dry Skin Myths',     img:'assets/wr-final-3.png', duration:'00:15', investment:'฿18,000', views:'145K', eng:'4.6%', revenue:'฿320K', spark:[15,32,28,58,44,70,55,80,62,88]},
+      {label:'Cold Weather Hack',  img:'assets/wr-final-4.png', duration:'00:14', investment:'฿18,000', views:'112K', eng:'3.9%', revenue:'฿240K', spark:[12,26,20,48,36,62,48,72,58,78]},
+      {label:'Real Skin Real Talk', img:'assets/video preview 02.png', duration:'00:20', investment:'฿18,000', views:'88K',  eng:'3.2%', revenue:'฿175K', spark:[10,20,16,36,28,50,40,58,46,65]},
+    ],
   },
 ];
+
+function VideoSparkline({points}) {
+  const w = 180, h = 28, pad = 2;
+  const max = Math.max(...points);
+  const min = Math.min(...points);
+  const range = max - min || 1;
+  const xs = points.map((_,i) => pad + (i / (points.length - 1)) * (w - pad * 2));
+  const ys = points.map(v => h - pad - ((v - min) / range) * (h - pad * 2));
+  const d = xs.map((x,i) => `${i===0?'M':'L'}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+  const area = d + ` L${xs[xs.length-1].toFixed(1)},${(h+2).toFixed(1)} L${xs[0].toFixed(1)},${(h+2).toFixed(1)} Z`;
+  return h('svg',{viewBox:`0 0 ${w} ${h}`,className:'vc-spark',preserveAspectRatio:'none'},
+    h('defs',null,
+      h('linearGradient',{id:'vsg',x1:'0',y1:'0',x2:'0',y2:'1'},
+        h('stop',{offset:'0%',stopColor:'#f0a500',stopOpacity:'0.25'}),
+        h('stop',{offset:'100%',stopColor:'#f0a500',stopOpacity:'0'})
+      )
+    ),
+    h('path',{d:area,fill:'url(#vsg)'}),
+    h('path',{d,fill:'none',stroke:'#f0a500',strokeWidth:1.5,strokeLinecap:'round',strokeLinejoin:'round'})
+  );
+}
+
+function VideoCarousel({videos, campaignName}) {
+  if (!videos || !videos.length) return null;
+  return h('div',{className:'vc-section'},
+    h('div',{className:'vc-section-hdr'},'Video performance'),
+    h('div',{className:'vc-scroll'},
+      videos.map((v,i) => h('div',{key:i,className:'vc-card'},
+        h('div',{className:'vc-thumb-wrap'},
+          h('img',{src:v.img, alt:v.label}),
+          h('div',{className:'vc-play'},
+            h('div',{className:'vc-play-btn'},
+              h('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'white'},h('path',{d:'M8 5v14l11-7z'}))
+            )
+          ),
+          h('div',{className:`vc-rank ${i===0?'vc-rank-1':'vc-rank-n'}`}, i+1),
+          h('div',{className:'vc-duration'}, v.duration),
+          h('div',{className:'vc-menu'},
+            h('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'rgba(255,255,255,0.6)'},
+              h('circle',{cx:12,cy:5,r:1.5}),h('circle',{cx:12,cy:12,r:1.5}),h('circle',{cx:12,cy:19,r:1.5})
+            )
+          )
+        ),
+        h('div',{className:'vc-body'},
+          h('div',{className:'vc-title'}, v.label),
+          h('div',{className:'vc-campaign-name'}, campaignName),
+          h('div',{className:'vc-invest-lbl'},'Investment'),
+          h('div',{className:'vc-invest-val'}, v.investment),
+          h('div',{className:'vc-stats'},
+            h('div',null,
+              h('div',{className:'vc-stat-lbl'},'Views'),
+              h('div',{className:'vc-stat-val'}, v.views)
+            ),
+            h('div',null,
+              h('div',{className:'vc-stat-lbl'},'Eng. Rate'),
+              h('div',{className:'vc-stat-val'}, v.eng)
+            ),
+            h('div',null,
+              h('div',{className:'vc-stat-lbl'},'Revenue'),
+              h('div',{className:'vc-stat-val gold'}, v.revenue)
+            )
+          ),
+          h(VideoSparkline,{points:v.spark})
+        )
+      ))
+    )
+  );
+}
 
 function CampaignReport({campaign}) {
   const s = campaign.summary;
@@ -1293,7 +1433,8 @@ function CampaignReport({campaign}) {
         h('div',{className:'rt-col'},p.shares),
         h('div',{className:'rt-col rt-ctr'},p.ctr)
       ))
-    )
+    ),
+    h(VideoCarousel,{videos:campaign.videos, campaignName:campaign.name})
   );
 }
 
