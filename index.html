@@ -179,12 +179,14 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg
 .step-text.done{color:var(--text-secondary)}
 
 /* ── Storyboard ───────────────────────────────────────────────────────────── */
-.sb-frame{background:var(--surface-2);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;height:68px;display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px;cursor:grab;user-select:none;transition:border-color .15s,opacity .15s}
+.sb-frame{background:var(--surface-2);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;cursor:grab;user-select:none;transition:border-color .15s,opacity .15s}
 .sb-frame:active{cursor:grabbing}
-.sb-frame.drag-over{border-color:var(--blue);background:rgba(76,133,245,0.08)}
+.sb-frame.drag-over{border-color:var(--blue);box-shadow:0 0 0 2px rgba(76,133,245,0.3)}
 .sb-frame.dragging{opacity:.35}
-.sb-frame-num{font-size:10px;font-weight:600;color:rgba(255,255,255,.25);letter-spacing:.06em;font-family:'Inter',sans-serif}
-.sb-frame-label{font-size:11px;color:rgba(255,255,255,.55);line-height:1.35;font-family:'Gabarito',sans-serif}
+.sb-frame-img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:var(--surface)}
+.sb-frame-meta{padding:8px 10px 9px;display:flex;align-items:baseline;gap:6px}
+.sb-frame-num{font-size:9px;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.08em;font-family:'Inter',sans-serif;flex-shrink:0}
+.sb-frame-label{font-size:11px;color:rgba(255,255,255,.6);line-height:1.3;font-family:'Gabarito',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ── Campaign result — 4 video cards ────────────────────────────────────── */
 .camp-videos-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -1110,12 +1112,18 @@ function S4({onNav}) {
 
 /* ── Storyboard Screen ────────────────────────────────────────────────────── */
 function StoryboardScreen({onNav}) {
-  const SCENE_LABELS = [
-    'Product reveal','Close-up texture','Lifestyle moment','Before & after',
-    'Ingredient spotlight','Morning routine','Application technique','Glow result',
-    'Testimonial hook','Brand logo close','CTA overlay','End card'
+  const SCENES = [
+    {label:'Product reveal',       seed:'serum1'},
+    {label:'Close-up texture',     seed:'skincare2'},
+    {label:'Morning routine',      seed:'morning3'},
+    {label:'Before & after',       seed:'glow4'},
+    {label:'Ingredient spotlight', seed:'botanical5'},
+    {label:'Application technique',seed:'routine6'},
+    {label:'Glow result',          seed:'glowing7'},
+    {label:'CTA overlay',          seed:'lifestyle8'},
   ];
-  const makeFrames = () => SCENE_LABELS.map((label,i) => ({id:i,num:i+1,label}));
+  const imgUrl = (seed) => `https://picsum.photos/seed/${seed}/480/300`;
+  const makeFrames = () => SCENES.map((s,i) => ({id:i, num:i+1, label:s.label, seed:s.seed}));
   const [activePost, setActivePost] = useState(0);
   const [frames, setFrames] = useState([makeFrames(),makeFrames(),makeFrames(),makeFrames()]);
   const [dragIdx, setDragIdx] = useState(null);
@@ -1151,7 +1159,7 @@ function StoryboardScreen({onNav}) {
         }, onClick:()=>setActivePost(i)}, label)
       )
     ),
-    h('div',{style:{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10,marginBottom:24}},
+    h('div',{style:{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:24}},
       frames[activePost].map((frame,i) =>
         h('div',{key:frame.id, draggable:true,
           onDragStart:()=>setDragIdx(i),
@@ -1160,8 +1168,11 @@ function StoryboardScreen({onNav}) {
           onDragEnd:()=>{ setDragIdx(null); setDragOver(null); },
           className:'sb-frame'+(dragIdx===i?' dragging':'')+(dragOver===i&&dragIdx!==i?' drag-over':''),
         },
-          h('div',{className:'sb-frame-num'},`SCENE ${frame.num}`),
-          h('div',{className:'sb-frame-label'},frame.label)
+          h('img',{className:'sb-frame-img', src:imgUrl(frame.seed), alt:frame.label, draggable:false}),
+          h('div',{className:'sb-frame-meta'},
+            h('span',{className:'sb-frame-num'},`${frame.num}`),
+            h('span',{className:'sb-frame-label'},frame.label)
+          )
         )
       )
     ),
