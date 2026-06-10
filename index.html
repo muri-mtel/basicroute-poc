@@ -585,7 +585,7 @@ function S1({onNav}) {
     ),
     h('div',{className:'campaigns-grid'},
       campaigns.map((c,ci) =>
-        h('div',{key:c.id, className:'campaign-card', onClick:()=>onNav('upload')},
+        h('div',{key:c.id, className:'campaign-card', onClick:()=>onNav('reports')},
           h('div',{className:'campaign-thumbs-row'},
             thumbs[ci].map((src,i) => h('img',{key:i,className:'campaign-thumb',src,alt:''}))
           ),
