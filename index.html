@@ -1368,25 +1368,13 @@ function ImageGenerationScreen() {
 }
 
 function GeneratedScreen() {
-  const videos = [
-    {label:'Video 1',img:'assets/video preview 01.png'},
-    {label:'Video 2',img:'assets/video preview 02.png'},
-    {label:'Video 3',img:'assets/video preview 03.png'},
-    {label:'Video 4',img:'assets/video preview 04.png'},
-  ];
-  const [saved,    setSaved]    = useState([false,false,false,false]);
-  const [regenning,setRegenning]= useState([false,false,false,false]);
-  const [toast,    setToast]    = useState(false);
+  const video = {label:'Video 1', img:'assets/video preview 01.png'};
+  const [saved,     setSaved]     = useState(false);
+  const [regenning, setRegenning] = useState(false);
+  const [toast,     setToast]     = useState(false);
 
-  const handleSave = (i) => {
-    setSaved(prev => prev.map((v,j)=>j===i?true:v));
-    setToast(true);
-    setTimeout(()=>setToast(false), 3000);
-  };
-  const handleRegen = (i) => {
-    setRegenning(prev=>prev.map((v,j)=>j===i?true:v));
-    setTimeout(()=>setRegenning(prev=>prev.map((v,j)=>j===i?false:v)), 2000);
-  };
+  const handleSave = () => { setSaved(true); setToast(true); setTimeout(()=>setToast(false), 3000); };
+  const handleRegen = () => { setRegenning(true); setTimeout(()=>setRegenning(false), 2000); };
 
   const DownloadIcon = () => h('svg',{width:12,height:12,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},
     h('path',{d:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'}),
@@ -1397,41 +1385,35 @@ function GeneratedScreen() {
   return h('div',{className:'screen-pad screen-enter'},
     h('div',{style:{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:28}},
       h('div',null,
-        h('h1',{className:'pg-h1'},'Your videos are ready.'),
-        h('p',{className:'pg-sub'},'Summer Glow — Q3 · 4 videos ready')
+        h('h1',{className:'pg-h1'},'Your video is ready.'),
+        h('p',{className:'pg-sub'},'Summer Glow — Q3')
       )
     ),
-    h('div',{className:'camp-videos-grid'},
-      videos.map((v,i)=>
-        h('div',{key:i,className:'camp-video-card'},
-          h('div',{className:'camp-video-thumb'},
-            regenning[i]
-              ? h('div',{className:'camp-regen-overlay'},
-                  h('div',{className:'camp-spinner'}),
-                  h('p',{className:'camp-regen-txt'},'Regenerating...')
-                )
-              : h(React.Fragment,null,
-                  h('img',{src:v.img,alt:v.label}),
-                  h('div',{className:'camp-play-btn'},
-                    h('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'white'},h('path',{d:'M8 5v14l11-7z'}))
-                  )
-                )
-          ),
-          h('div',{className:'camp-video-footer'},
-            h('span',{className:'camp-video-label'},v.label),
-            h('div',{className:'camp-video-actions'},
-              h('button',{className:'btn btn-ghost',style:{fontSize:12,padding:'5px 11px',gap:5}},
-                h(DownloadIcon), 'Download'
-              ),
-              saved[i]
-                ? h('button',{className:'btn btn-ghost',style:{fontSize:12,padding:'5px 11px',color:'var(--green)',borderColor:'var(--green-border)',gap:5}},'✓ Saved')
-                : h('button',{className:'btn btn-ghost',style:{fontSize:12,padding:'5px 11px',gap:5},onClick:()=>handleSave(i)},
-                    '✦ Save'
-                  ),
-              h('button',{className:'btn btn-ghost',style:{fontSize:12,padding:'5px 11px'},onClick:()=>handleRegen(i)},
-                '↻ Regen'
+    h('div',{style:{maxWidth:360,margin:'0 auto'}},
+      h('div',{className:'camp-video-card'},
+        h('div',{className:'camp-video-thumb'},
+          regenning
+            ? h('div',{className:'camp-regen-overlay'},
+                h('div',{className:'camp-spinner'}),
+                h('p',{className:'camp-regen-txt'},'Regenerating...')
               )
-            )
+            : h(React.Fragment,null,
+                h('img',{src:video.img,alt:video.label}),
+                h('div',{className:'camp-play-btn'},
+                  h('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'white'},h('path',{d:'M8 5v14l11-7z'}))
+                )
+              )
+        ),
+        h('div',{className:'camp-video-footer'},
+          h('span',{className:'camp-video-label'},video.label),
+          h('div',{className:'camp-video-actions'},
+            h('button',{className:'btn btn-ghost',style:{fontSize:12,padding:'5px 11px',gap:5}},
+              h(DownloadIcon), 'Download'
+            ),
+            saved
+              ? h('button',{className:'btn btn-ghost',style:{fontSize:12,padding:'5px 11px',color:'var(--green)',borderColor:'var(--green-border)',gap:5}},'✓ Saved')
+              : h('button',{className:'btn btn-ghost',style:{fontSize:12,padding:'5px 11px',gap:5},onClick:handleSave},'✦ Save'),
+            h('button',{className:'btn btn-ghost',style:{fontSize:12,padding:'5px 11px'},onClick:handleRegen},'↻ Regen')
           )
         )
       )
