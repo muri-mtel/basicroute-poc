@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-feature-settings:'cv11' 1,'ss01' 1}
+:root{
+  --accent:#2563eb;--accent-hover:#1d4ed8;--accent-light:#eff6ff;--accent-border:#bfdbfe;
+  --bg:#f8fafc;--surface:#ffffff;--border:#e2e8f0;--border-strong:#cbd5e1;
+  --text-primary:#0f172a;--text-secondary:#475569;--text-muted:#94a3b8;
+  --success:#16a34a;--sidebar-bg:#0c0c0f;
+  --n100:#f1f5f9;--n500:#64748b
+}
+body{font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--text-primary);background:var(--bg);height:100vh;overflow:hidden}
+.app{display:flex;height:100vh}
+
+/* Sidebar */
+.sidebar{width:220px;min-width:220px;background:var(--sidebar-bg);display:flex;flex-direction:column;height:100vh;border-right:1px solid rgba(255,255,255,.04)}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+.logo-icon{width:30px;height:30px;background:#1e1e26;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(255,255,255,.08)}
+.logo-text{color:#ffffff;font-size:14px;font-weight:600;letter-spacing:-.3px}
+.logo-sub{color:rgba(255,255,255,.25);font-size:10px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-top:1px}
+.sidebar-nav{flex:1;overflow-y:auto;padding:8px 0}
+.nav-section{margin-bottom:4px}
+.nav-label{font-size:10px;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.2);text-transform:uppercase;padding:10px 16px 4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;cursor:pointer;color:rgba(255,255,255,.45);font-size:13px;font-weight:400;border-radius:7px;margin:1px 8px;transition:background .12s,color .12s;user-select:none}
+.nav-item:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.8)}
+.nav-item.active{background:rgba(255,255,255,.08);color:#ffffff;box-shadow:inset 2px 0 0 var(--accent)}
+.nav-item.ghost{opacity:.3;cursor:default;pointer-events:none}
+.sidebar-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.06)}
+.sidebar-footer-text{font-size:11px;color:rgba(255,255,255,.2);font-weight:500}
+
+/* Header */
+.header{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;flex-shrink:0}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted)}
+.breadcrumb span{color:var(--text-secondary);font-weight:500}
+.breadcrumb .bc-sep{color:var(--border-strong)}
+.header-right{display:flex;align-items:center;gap:12px}
+.vdivider{width:1px;height:20px;background:var(--border)}
+.avatar{width:30px;height:30px;border-radius:50%;background:#0c0c0f;color:#ffffff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.org-name{font-size:13px;font-weight:500;color:var(--text-secondary)}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.content{flex:1;overflow-y:auto;padding:28px 32px}
+
+/* Page header */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px}
+.page-title{font-size:20px;font-weight:600;color:var(--text-primary);margin-bottom:3px;letter-spacing:-.02em}
+.page-sub{font-size:13px;color:var(--text-muted)}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;border-radius:20px;padding:3px 8px;font-size:11px;font-weight:500}
+.badge-green{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.badge-gray{background:var(--n100);color:var(--n500);border:1px solid var(--border)}
+.badge-blue{background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-border)}
+
+/* Stat cards */
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.stat-label{font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:7px;text-transform:none;letter-spacing:0}
+.stat-value{font-size:28px;font-weight:700;letter-spacing:-.03em;color:var(--text-primary);margin-bottom:4px;line-height:1}
+.stat-value-text{font-size:18px;font-weight:600;letter-spacing:-.01em;color:var(--text-primary);margin-bottom:4px;line-height:1.2}
+.stat-delta{font-size:11px;font-weight:500;color:var(--success)}
+
+/* Grid */
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* Client sections */
+.client-section{margin-bottom:36px}
+.client-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.client-name{font-size:15px;font-weight:600;color:var(--text-primary);letter-spacing:-.01em}
+.client-divider{flex:1;height:1px;background:var(--border)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const h = React.createElement;
+
+const clients = [
+  {
+    name: 'Mtel',
+    badge: 'Active',
+    stats: [
+      {label:'AI-GC Related',    value:'142',        sub:'campaigns',   delta:'+18% MoM'},
+      {label:'Revenue Generated', value:'฿2.4M',     sub:null,          delta:'฿+340K MoM'},
+      {label:'Tokens Used',       value:'8.2M',       sub:null,          delta:'+12% MoM'},
+      {label:'Images Generated',  value:'1,847',      sub:null,          delta:'+203 MoM'},
+      {label:'Videos Generated',  value:'312',        sub:null,          delta:'+41 MoM'},
+      {label:'Top Model',         value:'GPT-4o',     sub:null,          delta:null, isText:true},
+    ]
+  },
+  {
+    name: 'Major Cineplex',
+    badge: 'Active',
+    stats: [
+      {label:'AI-GC Related',    value:'89',          sub:'campaigns',   delta:'+9% MoM'},
+      {label:'Revenue Generated', value:'฿1.1M',      sub:null,          delta:'฿+87K MoM'},
+      {label:'Tokens Used',       value:'4.7M',        sub:null,          delta:'+8% MoM'},
+      {label:'Images Generated',  value:'923',         sub:null,          delta:'+94 MoM'},
+      {label:'Videos Generated',  value:'187',         sub:null,          delta:'+22 MoM'},
+      {label:'Top Model',         value:'Claude 3.5 Sonnet', sub:null,   delta:null, isText:true},
+    ]
+  },
+  {
+    name: 'ThaiPass',
+    badge: 'Active',
+    stats: [
+      {label:'AI-GC Related',    value:'34',          sub:'campaigns',   delta:'+24% MoM'},
+      {label:'Revenue Generated', value:'฿380K',      sub:null,          delta:'฿+52K MoM'},
+      {label:'Tokens Used',       value:'1.9M',        sub:null,          delta:'+21% MoM'},
+      {label:'Images Generated',  value:'412',         sub:null,          delta:'+67 MoM'},
+      {label:'Videos Generated',  value:'68',          sub:null,          delta:'+14 MoM'},
+      {label:'Top Model',         value:'GPT-4o',      sub:null,          delta:null, isText:true},
+    ]
+  },
+];
+
+function StatCard({label, value, sub, delta, isText}) {
+  return h('div',{className:'stat-card'},
+    h('div',{className:'stat-label'},label),
+    h('div',{style:{display:'flex',alignItems:'baseline',gap:5}},
+      h('div',{className: isText ? 'stat-value-text' : 'stat-value'}, value),
+      sub && h('span',{style:{fontSize:11,color:'var(--text-muted)',fontWeight:500}},sub)
+    ),
+    delta
+      ? h('div',{className:'stat-delta'},delta)
+      : h('div',{style:{marginTop:2}},
+          h('span',{className:'badge badge-gray',style:{fontSize:10,padding:'2px 7px'}},
+            value.includes('GPT') ? 'OpenAI' : value.includes('Claude') ? 'Anthropic' : 'AI'
+          )
+        )
+  );
+}
+
+function ClientSection({name, badge, stats}) {
+  return h('div',{className:'client-section'},
+    h('div',{className:'client-header'},
+      h('span',{className:'client-name'},name),
+      h('span',{className:'badge badge-green'},badge),
+      h('div',{className:'client-divider'})
+    ),
+    h('div',{className:'grid-3',style:{marginBottom:12}},
+      stats.slice(0,3).map((s,i) => h(StatCard,{key:i,...s}))
+    ),
+    h('div',{className:'grid-3'},
+      stats.slice(3,6).map((s,i) => h(StatCard,{key:i,...s}))
+    )
+  );
+}
+
+function AdminDashboard() {
+  const navItems = [
+    {label:'Dashboard', icon:'▣', active:true},
+    {label:'Clients',   icon:'◈', active:false, ghost:true},
+    {label:'Settings',  icon:'⊙', active:false, ghost:true},
+  ];
+
+  return h('div',{className:'app'},
+    // Sidebar
+    h('div',{className:'sidebar'},
+      h('div',{className:'sidebar-logo'},
+        h('div',{className:'logo-icon'},
+          h('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:'rgba(255,255,255,.7)',strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},
+            h('path',{d:'M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2'})
+          )
+        ),
+        h('div',null,
+          h('div',{className:'logo-text'},'Basicroute'),
+          h('div',{className:'logo-sub'},'Admin')
+        )
+      ),
+      h('div',{className:'sidebar-nav'},
+        h('div',{className:'nav-section'},
+          h('div',{className:'nav-label'},'Overview'),
+          navItems.map((item,i) =>
+            h('div',{key:i, className:`nav-item${item.active?' active':''}${item.ghost?' ghost':''}`},
+              h('span',{style:{fontSize:13,lineHeight:1}},item.icon),
+              item.label
+            )
+          )
+        )
+      ),
+      h('div',{className:'sidebar-footer'},
+        h('div',{className:'sidebar-footer-text'},'Admin access · v1.0')
+      )
+    ),
+
+    // Main
+    h('div',{className:'main'},
+      h('div',{className:'header'},
+        h('div',{className:'breadcrumb'},
+          h('span',null,'Admin'),
+          h('span',{className:'bc-sep'},'›'),
+          h('span',null,'Dashboard')
+        ),
+        h('div',{className:'header-right'},
+          h('span',{className:'org-name'},'Basicroute Platform'),
+          h('div',{className:'vdivider'}),
+          h('div',{className:'avatar'},'A')
+        )
+      ),
+      h('div',{className:'content'},
+        h('div',{className:'page-header'},
+          h('div',null,
+            h('h1',{className:'page-title'},'Dashboard'),
+            h('p',{className:'page-sub'},'Platform overview · June 2026')
+          ),
+          h('span',{className:'badge badge-blue'},'3 active clients')
+        ),
+        clients.map((c,i) => h(ClientSection,{key:i,...c}))
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(h(AdminDashboard));
+</script>
+</body>
+</html>
