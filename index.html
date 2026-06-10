@@ -549,10 +549,6 @@ function Dock({screen, onNav}) {
       h('span',{className:'dock-tip'},'Video Generation')
     ),
     h('div',{className:'dock-wrap'},
-      h('button',{className:'dock-btn ghost'}, h(DockCode)),
-      h('span',{className:'dock-tip'},'Code')
-    ),
-    h('div',{className:'dock-wrap'},
       h('button',{className:`dock-btn${screen==='settings'?' active':''}`,onClick:()=>onNav('settings')}, h(DockGear)),
       h('span',{className:'dock-tip'},'Settings')
     )
